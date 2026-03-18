@@ -14,19 +14,16 @@ import type { AnimalType } from "@/types/animal";
 
 const HubPage = () => {
   const navigate = useNavigate();
-  const { operatorEmail, logout } = useAuthStore((state) => ({
-    operatorEmail: state.operatorEmail,
-    logout: state.logout,
-  }));
-  const { animals, activeType, isLoading, loadAnimals } = useAnimalStore((state) => ({
-    animals: state.animals,
-    activeType: state.activeType,
-    isLoading: state.isLoading,
-    loadAnimals: state.loadAnimals,
-  }));
+  const operatorEmail = useAuthStore((state) => state.operatorEmail);
+  const logout = useAuthStore((state) => state.logout);
+  const animals = useAnimalStore((state) => state.animals);
+  const activeType = useAnimalStore((state) => state.activeType);
+  const isLoading = useAnimalStore((state) => state.isLoading);
+  const loadAnimals = useAnimalStore((state) => state.loadAnimals);
+  const setActiveType = useAnimalStore((state) => state.setActiveType);
 
   useEffect(() => {
-    void loadAnimals(activeType);
+    void loadAnimals();
   }, [activeType, loadAnimals]);
 
   const availableAnimals = useMemo(
@@ -35,7 +32,7 @@ const HubPage = () => {
   );
 
   const handleTabChange = (value: string) => {
-    void loadAnimals(value as AnimalType);
+    setActiveType(value as AnimalType);
   };
 
   return (

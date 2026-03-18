@@ -20,10 +20,8 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { sessionToken, login } = useAuthStore((state) => ({
-    sessionToken: state.sessionToken,
-    login: state.login,
-  }));
+  const sessionToken = useAuthStore((state) => state.sessionToken);
+  const login = useAuthStore((state) => state.login);
 
   const {
     register,

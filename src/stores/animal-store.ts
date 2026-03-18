@@ -10,7 +10,8 @@ interface AnimalState {
   activeType: AnimalType;
   isLoading: boolean;
   adoptionLogs: AdoptionLog[];
-  loadAnimals: (type: AnimalType) => Promise<void>;
+  setActiveType: (type: AnimalType) => void;
+  loadAnimals: () => Promise<void>;
   adoptAnimal: (animalId: string, adopter: AdoptionFormValues) => Promise<void>;
   findAnimal: (animalId: string) => Animal | undefined;
   resetAnimals: () => void;
@@ -23,8 +24,9 @@ export const useAnimalStore = create<AnimalState>()(
       activeType: "dog",
       isLoading: false,
       adoptionLogs: [],
-      loadAnimals: async (type) => {
-        set({ isLoading: true, activeType: type });
+      setActiveType: (type) => set({ activeType: type }),
+      loadAnimals: async () => {
+        set({ isLoading: true });
         await waitRandom();
         set({ isLoading: false });
       },
