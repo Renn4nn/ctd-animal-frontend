@@ -26,11 +26,9 @@ const AnimalDetailPage = () => {
   const navigate = useNavigate();
   const { id = "" } = useParams();
   const [submitted, setSubmitted] = useState(false);
-  const { animal, adoptAnimal, isLoading } = useAnimalStore((state) => ({
-    animal: state.findAnimal(id),
-    adoptAnimal: state.adoptAnimal,
-    isLoading: state.isLoading,
-  }));
+  const animal = useAnimalStore((state) => state.findAnimal(id));
+  const adoptAnimal = useAnimalStore((state) => state.adoptAnimal);
+  const isLoading = useAnimalStore((state) => state.isLoading);
 
   const form = useForm<AdoptionFormValues>({
     resolver: zodResolver(adoptionSchema),

@@ -3,10 +3,8 @@ import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuthStore } from "@/stores/auth-store";
 
 export const ProtectedRoute = () => {
-  const { sessionToken, hydrated } = useAuthStore((state) => ({
-    sessionToken: state.sessionToken,
-    hydrated: state.hydrated,
-  }));
+  const sessionToken = useAuthStore((state) => state.sessionToken);
+  const hydrated = useAuthStore((state) => state.hydrated);
   const location = useLocation();
 
   if (!hydrated) {
