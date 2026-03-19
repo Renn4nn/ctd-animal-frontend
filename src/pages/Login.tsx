@@ -38,14 +38,14 @@ const LoginPage = () => {
   });
 
   if (sessionToken) {
-    const redirectTo = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname ?? "/hub";
+    const redirectTo = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname ?? "/home";
     return <Navigate to={redirectTo} replace />;
   }
 
   const onSubmit = async (values: LoginFormValues) => {
     try {
       await login(values.email, values.password);
-      navigate("/hub", { replace: true });
+      navigate("/home", { replace: true });
     } catch (error) {
       setError("root", {
         message: error instanceof Error ? error.message : "Não foi possível autenticar.",

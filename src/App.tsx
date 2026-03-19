@@ -11,7 +11,7 @@ import HubPage from "./pages/Hub.tsx";
 import Index from "./pages/Index.tsx";
 import LoginPage from "./pages/Login.tsx";
 import NotFound from "./pages/NotFound.tsx";
-import Register from "./pages/Register.tsx";
+import Home from "./pages/Home.tsx";
 
 const queryClient = new QueryClient();
 
@@ -25,8 +25,8 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<Register />} />
             <Route element={<ProtectedRoute />}>
+              <Route path="/home" element={<Home />} />
               <Route path="/hub" element={<HubPage />} />
               <Route path="/animal/:id" element={<AnimalDetailPage />} />
             </Route>
