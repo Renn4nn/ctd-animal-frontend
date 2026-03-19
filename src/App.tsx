@@ -10,8 +10,9 @@ import AnimalDetailPage from "./pages/AnimalDetail.tsx";
 import HubPage from "./pages/Hub.tsx";
 import Index from "./pages/Index.tsx";
 import LoginPage from "./pages/Login.tsx";
-import NotFound from "./pages/NotFound.tsx";
+import ControlePage from "./pages/Controle.tsx";
 import Home from "./pages/Home.tsx";
+import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
 
@@ -28,7 +29,11 @@ const App = () => (
             <Route element={<ProtectedRoute />}>
               <Route path="/home" element={<Home />} />
               <Route path="/hub" element={<HubPage />} />
-              <Route path="/animal/:id" element={<AnimalDetailPage />} />
+              <Route path="/controle" element={<ControlePage />}>
+                <Route path="criar" element={<div className="p-4">Página de Criar</div>} />
+                <Route path="editar" element={<div className="p-4">Página de Editar</div>} />
+                <Route path="deletar" element={<div className="p-4">Página de Deletar</div>} />
+              </Route>
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

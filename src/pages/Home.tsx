@@ -37,6 +37,7 @@ export default function Home() {
             <Button 
               variant="outline" 
               className="border-2 border-blue-600 text-blue-600 hover:bg-blue-50 h-16 text-xl font-bold rounded-2xl"
+              onClick={() => navigate("/controle", { replace: true })}
             >
               Controle
             </Button>
