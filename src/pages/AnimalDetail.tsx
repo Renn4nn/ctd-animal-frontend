@@ -1,5 +1,5 @@
-import { ArrowLeft, CheckCircle2, Heart, LoaderCircle, ShieldCheck } from "lucide-react";
-import { motion } from "framer-motion";
+import { ArrowLeft, ArrowRight, CheckCircle2, Heart, LoaderCircle, ShieldCheck, Delete, Check } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,6 +9,7 @@ import { z } from "zod";
 import { AnimalGallery } from "@/components/animal-gallery";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { formatCpf, formatPhone, getDigits } from "@/lib/masks";
 import { useAnimalStore } from "@/stores/animal-store";
@@ -22,10 +23,35 @@ const adoptionSchema = z.object({
   email: z.string().email("Digite um e-mail válido."),
 });
 
+const LETTERS = [
+  ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
+  ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
+  ["Z", "X", "C", "V", "B", "N", "M"],
+];
+
+const NUMBERS = [["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"], ["0"]];
+
+const EMAIL_KEYS = [["@", ".", "_", "-"]];
+
+type Step = "name" | "cpf" | "phone" | "email" | "review";
+type FormField = "name" | "cpf" | "phone" | "email";
+
+const STEP_ORDER: Step[] = ["name", "cpf", "phone", "email", "review"];
+
+const STEP_CONFIG: Record<Step, { label: string; keyboard: "letters" | "numbers" | "email" | "none" }> = {
+  name: { label: "Qual é o seu nome completo?", keyboard: "letters" },
+  cpf: { label: "Qual é o seu CPF?", keyboard: "numbers" },
+  phone: { label: "Qual é o seu telefone?", keyboard: "numbers" },
+  email: { label: "Qual é o seu e-mail?", keyboard: "email" },
+  review: { label: "Revise seus dados", keyboard: "none" },
+};
+
 const AnimalDetailPage = () => {
   const navigate = useNavigate();
   const { id = "" } = useParams();
   const [submitted, setSubmitted] = useState(false);
+  const [currentStep, setCurrentStep] = useState<Step>("name");
+  const [formOpen, setFormOpen] = useState(false);
   const animal = useAnimalStore((state) => state.findAnimal(id));
   const adoptAnimal = useAnimalStore((state) => state.adoptAnimal);
   const isLoading = useAnimalStore((state) => state.isLoading);
@@ -38,6 +64,7 @@ const AnimalDetailPage = () => {
       phone: "",
       email: "",
     },
+    mode: "onChange",
   });
 
   const summary = useMemo(
@@ -60,6 +87,7 @@ const AnimalDetailPage = () => {
   const onSubmit = async (values: AdoptionFormValues) => {
     await adoptAnimal(animal.id, values);
     setSubmitted(true);
+    setFormOpen(false);
     toast.success("Adoção registrada com sucesso!", {
       description: `${animal.name} foi removido(a) da lista de disponíveis.`,
     });
@@ -67,6 +95,94 @@ const AnimalDetailPage = () => {
     window.setTimeout(() => {
       navigate("/hub", { replace: true });
     }, 1600);
+  };
+
+  const handleKeyPress = (key: string) => {
+    if (currentStep === "review") return;
+    
+    const field = currentStep as FormField;
+    const currentValue = form.watch(field) || "";
+    let newValue = currentValue;
+
+    if (currentStep === "cpf") {
+      newValue = formatCpf(currentValue + key);
+    } else if (currentStep === "phone") {
+      newValue = formatPhone(currentValue + key);
+    } else {
+      newValue = currentValue + key;
+    }
+
+    form.setValue(field, newValue, { shouldValidate: true });
+  };
+
+  const handleBackspace = () => {
+    if (currentStep === "review") return;
+    
+    const field = currentStep as FormField;
+    const currentValue = form.watch(field) || "";
+    let newValue = currentValue.slice(0, -1);
+
+    if (currentStep === "cpf") {
+      newValue = formatCpf(getDigits(newValue));
+    } else if (currentStep === "phone") {
+      newValue = formatPhone(getDigits(newValue));
+    }
+
+    form.setValue(field, newValue, { shouldValidate: true });
+  };
+
+  const handleSpace = () => {
+    if (currentStep === "name" || currentStep === "email") {
+      const field = currentStep as FormField;
+      const currentValue = form.watch(field) || "";
+      form.setValue(field, currentValue + " ", { shouldValidate: true });
+    }
+  };
+
+  const goToNextStep = () => {
+    const currentIndex = STEP_ORDER.indexOf(currentStep);
+    if (currentIndex < STEP_ORDER.length - 1) {
+      setCurrentStep(STEP_ORDER[currentIndex + 1]);
+    }
+  };
+
+  const goToPrevStep = () => {
+    const currentIndex = STEP_ORDER.indexOf(currentStep);
+    if (currentIndex > 0) {
+      setCurrentStep(STEP_ORDER[currentIndex - 1]);
+    }
+  };
+
+  const canProceed = () => {
+    if (currentStep === "review") return true;
+    
+    const field = currentStep as FormField;
+    const value = form.watch(field);
+    if (!value) return false;
+
+    switch (currentStep) {
+      case "name":
+        return value.length >= 3;
+      case "cpf":
+        return getDigits(value).length === 11;
+      case "phone":
+        return getDigits(value).length >= 10;
+      case "email":
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+      default:
+        return true;
+    }
+  };
+
+  const openForm = () => {
+    setFormOpen(true);
+    setCurrentStep("name");
+    form.reset();
+  };
+
+  const closeForm = () => {
+    setFormOpen(false);
+    setCurrentStep("name");
   };
 
   return (
@@ -143,48 +259,229 @@ const AnimalDetailPage = () => {
                       </p>
                     </div>
                   ) : (
-                    <form className="mt-5 grid gap-4" onSubmit={form.handleSubmit(onSubmit)}>
-                      <div className="grid gap-2">
-                        <label className="text-sm font-semibold uppercase tracking-[0.18em] text-muted-foreground">Nome</label>
-                        <Input {...form.register("name")} placeholder="Nome completo do adotante" />
-                        {form.formState.errors.name ? <p className="text-sm text-destructive">{form.formState.errors.name.message}</p> : null}
-                      </div>
-
-                      <div className="grid gap-4 md:grid-cols-2">
-                        <div className="grid gap-2">
-                          <label className="text-sm font-semibold uppercase tracking-[0.18em] text-muted-foreground">CPF</label>
-                          <Input
-                            {...form.register("cpf")}
-                            placeholder="000.000.000-00"
-                            onChange={(event) => form.setValue("cpf", formatCpf(event.target.value), { shouldValidate: true })}
-                            value={form.watch("cpf")}
-                          />
-                          {form.formState.errors.cpf ? <p className="text-sm text-destructive">{form.formState.errors.cpf.message}</p> : null}
-                        </div>
-
-                        <div className="grid gap-2">
-                          <label className="text-sm font-semibold uppercase tracking-[0.18em] text-muted-foreground">Telefone</label>
-                          <Input
-                            {...form.register("phone")}
-                            placeholder="(00) 00000-0000"
-                            onChange={(event) => form.setValue("phone", formatPhone(event.target.value), { shouldValidate: true })}
-                            value={form.watch("phone")}
-                          />
-                          {form.formState.errors.phone ? <p className="text-sm text-destructive">{form.formState.errors.phone.message}</p> : null}
-                        </div>
-                      </div>
-
-                      <div className="grid gap-2">
-                        <label className="text-sm font-semibold uppercase tracking-[0.18em] text-muted-foreground">E-mail</label>
-                        <Input {...form.register("email")} placeholder="adotante@email.com" type="email" />
-                        {form.formState.errors.email ? <p className="text-sm text-destructive">{form.formState.errors.email.message}</p> : null}
-                      </div>
-
-                      <Button className="mt-2 w-full" size="lg" type="submit" variant="hero" disabled={isLoading}>
-                        {isLoading ? <LoaderCircle className="animate-spin" /> : null}
-                        Confirmar adoção
+                    <>
+                      <Button className="mt-5 w-full" size="lg" variant="hero" onClick={openForm}>
+                        Adote-me
                       </Button>
-                    </form>
+
+                      <Dialog open={formOpen} onOpenChange={setFormOpen}>
+                        <DialogContent className="max-h-[95vh] max-w-2xl overflow-y-auto p-0">
+                          <DialogHeader className="border-b border-border px-6 pb-4 pt-6">
+                            <DialogTitle className="flex items-center gap-2 text-xl">
+                              <Heart className="size-5 text-primary" />
+                              Adotar {animal.name}
+                            </DialogTitle>
+                            <DialogDescription>
+                              Preencha seus dados para iniciar o processo de adoção.
+                            </DialogDescription>
+                          </DialogHeader>
+
+                          <div className="px-6 py-4">
+                            {/* Indicador de progresso - todas as etapas */}
+                            <div className="mb-6 flex items-center justify-center gap-2">
+                              {STEP_ORDER.map((step, index) => {
+                                const currentIndex = STEP_ORDER.indexOf(currentStep);
+                                const isCompleted = index < currentIndex;
+                                const isCurrent = index === currentIndex;
+
+                                return (
+                                  <div key={step} className="flex items-center">
+                                    <div
+                                      className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold transition-colors ${
+                                        isCompleted
+                                          ? "bg-primary text-primary-foreground"
+                                          : isCurrent
+                                            ? "bg-primary text-primary-foreground ring-2 ring-primary/30"
+                                            : "bg-muted text-muted-foreground"
+                                      }`}
+                                    >
+                                      {isCompleted ? <Check className="size-5" /> : index + 1}
+                                    </div>
+                                    {index < STEP_ORDER.length - 1 && (
+                                      <div
+                                        className={`mx-1 h-1 w-8 rounded-full transition-colors ${
+                                          isCompleted ? "bg-primary" : "bg-muted"
+                                        }`}
+                                      />
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+
+                            {/* Wizard de etapas */}
+                            <AnimatePresence mode="wait">
+                              <motion.div
+                                key={currentStep}
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -20 }}
+                                transition={{ duration: 0.2 }}
+                                className="grid gap-4"
+                              >
+                                {/* Label da etapa */}
+                                <h3 className="text-center text-xl font-bold">{STEP_CONFIG[currentStep].label}</h3>
+
+                                {/* Campo atual */}
+                                {currentStep === "review" ? (
+                                  <div className="grid gap-3 rounded-xl border border-border bg-card p-4">
+                                    <div className="grid gap-1">
+                                      <span className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Nome</span>
+                                      <span className="font-medium">{form.watch("name")}</span>
+                                    </div>
+                                    <div className="grid gap-1">
+                                      <span className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">CPF</span>
+                                      <span className="font-medium">{form.watch("cpf")}</span>
+                                    </div>
+                                    <div className="grid gap-1">
+                                      <span className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Telefone</span>
+                                      <span className="font-medium">{form.watch("phone")}</span>
+                                    </div>
+                                    <div className="grid gap-1">
+                                      <span className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">E-mail</span>
+                                      <span className="font-medium">{form.watch("email")}</span>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <Input
+                                    value={form.watch(currentStep as keyof AdoptionFormValues)}
+                                    readOnly
+                                    placeholder={
+                                      currentStep === "name" ? "Digite seu nome completo" :
+                                      currentStep === "cpf" ? "000.000.000-00" :
+                                      currentStep === "phone" ? "(00) 00000-0000" :
+                                      "seu@email.com"
+                                    }
+                                    className="h-14 text-center text-lg"
+                                  />
+                                )}
+
+                                {/* Teclado virtual */}
+                                {STEP_CONFIG[currentStep].keyboard !== "none" && (
+                                  <div className="rounded-xl bg-muted p-4">
+                                    {/* Letras */}
+                                    {(STEP_CONFIG[currentStep].keyboard === "letters" || STEP_CONFIG[currentStep].keyboard === "email") && (
+                                      <div className="grid gap-2">
+                                        {LETTERS.map((row, rowIndex) => (
+                                          <div key={rowIndex} className="flex justify-center gap-1.5">
+                                            {row.map((key) => (
+                                              <button
+                                                key={key}
+                                                type="button"
+                                                onClick={() => handleKeyPress(key)}
+                                                className="flex h-14 w-11 items-center justify-center rounded-lg bg-card text-lg font-semibold shadow-sm transition-all hover:bg-primary hover:text-primary-foreground active:scale-95"
+                                              >
+                                                {key}
+                                              </button>
+                                            ))}
+                                          </div>
+                                        ))}
+                                        {/* Espaço e teclas especiais de email */}
+                                        <div className="flex justify-center gap-2 pt-2">
+                                          {STEP_CONFIG[currentStep].keyboard === "email" && (
+                                            <>
+                                              {EMAIL_KEYS[0].map((key) => (
+                                                <button
+                                                  key={key}
+                                                  type="button"
+                                                  onClick={() => handleKeyPress(key)}
+                                                  className="flex h-14 w-14 items-center justify-center rounded-lg bg-card text-lg font-semibold shadow-sm transition-all hover:bg-primary hover:text-primary-foreground active:scale-95"
+                                                >
+                                                  {key}
+                                                </button>
+                                              ))}
+                                            </>
+                                          )}
+                                          <button
+                                            type="button"
+                                            onClick={handleSpace}
+                                            className="flex h-14 w-36 items-center justify-center rounded-lg bg-card font-semibold shadow-sm transition-all hover:bg-primary hover:text-primary-foreground active:scale-95"
+                                          >
+                                            Espaço
+                                          </button>
+                                          <button
+                                            type="button"
+                                            onClick={handleBackspace}
+                                            className="flex h-14 w-20 items-center justify-center rounded-lg bg-destructive/10 text-destructive shadow-sm transition-all hover:bg-destructive hover:text-destructive-foreground active:scale-95"
+                                          >
+                                            <Delete className="size-6" />
+                                          </button>
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    {/* Números */}
+                                    {STEP_CONFIG[currentStep].keyboard === "numbers" && (
+                                      <div className="grid gap-3">
+                                        {NUMBERS.map((row, rowIndex) => (
+                                          <div key={rowIndex} className="flex justify-center gap-3">
+                                            {row.map((key) => (
+                                              <button
+                                                key={key}
+                                                type="button"
+                                                onClick={() => handleKeyPress(key)}
+                                                className="flex h-16 w-24 items-center justify-center rounded-lg bg-card text-2xl font-semibold shadow-sm transition-all hover:bg-primary hover:text-primary-foreground active:scale-95"
+                                              >
+                                                {key}
+                                              </button>
+                                            ))}
+                                          </div>
+                                        ))}
+                                        <div className="flex justify-center gap-3 pt-2">
+                                          <button
+                                            type="button"
+                                            onClick={handleBackspace}
+                                            className="flex h-16 w-40 items-center justify-center rounded-lg bg-destructive/10 text-destructive shadow-sm transition-all hover:bg-destructive hover:text-destructive-foreground active:scale-95"
+                                          >
+                                            <Delete className="size-7" />
+                                          </button>
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+
+                                {/* Botões de navegação */}
+                                <div className="flex gap-3 pt-4">
+                                  <Button variant="outline" className="flex-1" size="lg" onClick={currentStep === "name" ? closeForm : goToPrevStep}>
+                                    {currentStep === "name" ? "Cancelar" : (
+                                      <>
+                                        <ArrowLeft className="mr-2 size-4" />
+                                        Voltar
+                                      </>
+                                    )}
+                                  </Button>
+
+                                  {currentStep === "review" ? (
+                                    <Button
+                                      className="flex-1"
+                                      size="lg"
+                                      variant="hero"
+                                      onClick={form.handleSubmit(onSubmit)}
+                                      disabled={isLoading}
+                                    >
+                                      {isLoading ? <LoaderCircle className="animate-spin" /> : <Check className="mr-2 size-4" />}
+                                      Confirmar adoção
+                                    </Button>
+                                  ) : (
+                                    <Button
+                                      className="flex-1"
+                                      size="lg"
+                                      variant="hero"
+                                      onClick={goToNextStep}
+                                      disabled={!canProceed()}
+                                    >
+                                      Próximo
+                                      <ArrowRight className="ml-2 size-4" />
+                                    </Button>
+                                  )}
+                                </div>
+                              </motion.div>
+                            </AnimatePresence>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                    </>
                   )}
                 </div>
               </CardContent>

@@ -43,7 +43,6 @@ export const AnimalCard = ({ animal, index }: AnimalCardProps) => {
               {animal.age} · {animal.breed}
             </p>
           </div>
-          <p className="text-sm leading-7 text-foreground">{animal.description}</p>
           <Button className="w-full" variant="hero" onClick={() => navigate(`/animal/${animal.id}`)}>
             Ver detalhes e adotar
           </Button>

@@ -1,7 +1,3 @@
-import catBlack from "@/assets/animals/cat-black.jpg";
-import catTabby from "@/assets/animals/cat-tabby.jpg";
-import dogBlackWhite from "@/assets/animals/dog-black-white.jpg";
-import dogCaramel from "@/assets/animals/dog-caramel.jpg";
 import type { Animal, AnimalType } from "@/types/animal";
 
 export const animalTypeLabels: Record<AnimalType, string> = {
@@ -22,7 +18,10 @@ export const ANIMALS: Animal[] = [
     vaccines: ["V10", "Antirrábica", "Vermifugado"],
     size: "Médio",
     sex: "Macho",
-    photos: [dogCaramel, dogBlackWhite],
+    photos: [
+      "https://marilianoticia.com.br/wp-content/uploads/2025/05/Feira-de-adocao-de-animais-tera-mais-uma-edicao-na-cidade.jpg",
+      "https://www.petz.com.br/blog/wp-content/uploads/2015/08/adotar01.jpg",
+    ],
     status: "available",
   },
   {
@@ -37,7 +36,7 @@ export const ANIMALS: Animal[] = [
     vaccines: ["V10", "Giárdia", "Antirrábica"],
     size: "Médio",
     sex: "Fêmea",
-    photos: [dogBlackWhite, dogCaramel],
+    photos: ["https://love.doghero.com.br/wp-content/uploads/2018/06/shutterstock_1058092325.jpg", "https://adotar.com.br/upload/2023-07/animais_imagem1018397.jpg?w=700&format=webp"],
     status: "available",
   },
   {
@@ -52,7 +51,7 @@ export const ANIMALS: Animal[] = [
     vaccines: ["V10", "Antirrábica", "Castrado"],
     size: "Pequeno",
     sex: "Macho",
-    photos: [dogCaramel, dogBlackWhite],
+    photos: ["https://prefeitura.rio/wp-content/uploads/2024/05/adocao.jpg", "https://s2-oglobo.glbimg.com/2qtUsuEwDF1i0MgPSkEDqiMRXA0=/400x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_da025474c0c44edd99332dddb09cabe8/internal_photos/bs/2024/O/e/HVYsVfQfiqJmR4hywv5A/whatsapp-image-2024-05-17-at-15.47.06-3-.jpeg"],
     status: "available",
   },
   {
@@ -67,7 +66,7 @@ export const ANIMALS: Animal[] = [
     vaccines: ["V10", "Antirrábica", "Vermifugada"],
     size: "Médio",
     sex: "Fêmea",
-    photos: [dogBlackWhite, dogCaramel],
+    photos: ["https://pet.istoe.com.br/wp-content/uploads/sites/32/2025/07/projetoamordepet5.jpg", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQS-0QdcFk7gpzOBj-AB6LPCQV0YahaGE2APA&s"],
     status: "available",
   },
   {
@@ -82,7 +81,7 @@ export const ANIMALS: Animal[] = [
     vaccines: ["V10", "Antirrábica", "Castrado"],
     size: "Grande",
     sex: "Macho",
-    photos: [dogCaramel, dogBlackWhite],
+    photos: ["https://agendasorocaba.com.br/wp-content/uploads/2023/02/animais-para-adocao.jpg", "https://adotar.com.br/upload/2023-05/animais_imagem989067.jpg"],
     status: "available",
   },
   {
@@ -97,7 +96,7 @@ export const ANIMALS: Animal[] = [
     vaccines: ["V8", "Antirrábica", "Vermifugada"],
     size: "Pequeno",
     sex: "Fêmea",
-    photos: [dogBlackWhite, dogCaramel],
+    photos: ["https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8lZCvK_etRlfkl-iarVT6-vYx4JWkJLdp3A&s", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR1pkEhO5CoxbZ2KLAbaMbD1tH-9q7cluW3vA&s"],
     status: "available",
   },
   {
@@ -112,7 +111,7 @@ export const ANIMALS: Animal[] = [
     vaccines: ["V4", "Antirrábica", "Castrada"],
     size: "Pequeno",
     sex: "Fêmea",
-    photos: [catTabby, catBlack],
+    photos: ["https://static.ndmais.com.br/2024/05/gato-preto-657x800.jpeg", "https://images.amigonaosecompra.com.br/unsafe/1176x0/95deba1d-3130-43fb-afb4-8279708dce31/cac77a81-1546-478c-9129-d3f4830bcb44/cac77a81-1546-478c-9129-d3f4830bcb44.jpg?v=63880322792"],
     status: "available",
   },
   {
@@ -127,7 +126,7 @@ export const ANIMALS: Animal[] = [
     vaccines: ["V4", "Antirrábica", "Castrado"],
     size: "Pequeno",
     sex: "Macho",
-    photos: [catBlack, catTabby],
+    photos: ["https://catland.org.br/wp-content/uploads/2023/04/foto-1.png", "https://www.prefeitura.sp.gov.br/cidade/secretarias/upload/saude/Tarzan.jpg"],
     status: "available",
   },
   {
@@ -142,7 +141,7 @@ export const ANIMALS: Animal[] = [
     vaccines: ["V4", "Antirrábica", "Vermifugada"],
     size: "Pequeno",
     sex: "Fêmea",
-    photos: [catTabby, catBlack],
+    photos: ["https://static.wixstatic.com/media/e2e4ef_138d020469d24bf59c2520525eb320e2~mv2.jpeg/v1/fill/w_1200,h_1600,al_c,q_85/Tico_gato-para-adocao_02.jpeg", "https://s2-g1.glbimg.com/XFjLmcpddqLuwc71SogRH7v0fss=/0x0:3632x3484/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_59edd422c0c84a879bd37670ae4f538a/internal_photos/bs/2022/s/8/rSUkDRRUqEGVzHylABsw/gatos-disponiveis-para-adocao-sao-do-ccz-e-de-protetoras-da-cidade.jpg"],
     status: "available",
   },
   {
@@ -157,7 +156,7 @@ export const ANIMALS: Animal[] = [
     vaccines: ["V5", "Antirrábica", "Castrado"],
     size: "Pequeno",
     sex: "Macho",
-    photos: [catBlack, catTabby],
+    photos: ["https://s2-oglobo.glbimg.com/YyQavnVQpOnNlBTkGIdXnS_jGgE=/0x0:1280x853/888x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_da025474c0c44edd99332dddb09cabe8/internal_photos/bs/2023/p/m/4cpAnBR0i6Melc3GMVwg/wellington-vai-para-a-feira-jpg.jpg", "https://static.wixstatic.com/media/2b0fa4_d101f7434efc4663a5a056eca5bc69eb~mv2.jpg/v1/fill/w_280,h_280,fp_0.50_0.50,q_90,enc_avif,quality_auto/2b0fa4_d101f7434efc4663a5a056eca5bc69eb~mv2.webp"],
     status: "available",
   },
   {
@@ -172,7 +171,7 @@ export const ANIMALS: Animal[] = [
     vaccines: ["V4", "Antirrábica", "Vermifugada"],
     size: "Pequeno",
     sex: "Fêmea",
-    photos: [catTabby, catBlack],
+    photos: ["https://s2-g1.glbimg.com/Ut3E5IFURmqMJf6n9b6ck3DUuYk=/0x439:853x1132/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_59edd422c0c84a879bd37670ae4f538a/internal_photos/bs/2020/x/U/ADwGDYRpmbcJFjcvUqKw/whatsapp-image-2020-03-30-at-15.14.20.jpeg", "https://adotar.com.br/upload/2014-01/animais_imagem47816.jpg?w=700&format=webp"],
     status: "available",
   },
   {
@@ -187,7 +186,7 @@ export const ANIMALS: Animal[] = [
     vaccines: ["V5", "Antirrábica", "Castrado"],
     size: "Pequeno",
     sex: "Macho",
-    photos: [catBlack, catTabby],
+    photos: ["https://www.patasdacasa.com.br/sites/default/files/styles/article_detail_1200/public/noticias/2023/01/6-coisas-que-a-adocao-de-um-gato-adulto-pode-te-ensinar_1.jpg.webp?itok=wcp6ULmY", "https://cdn.shopify.com/s/files/1/0500/8965/6473/files/gray-g16b72164c_1920_480x480.jpg?v=1663247513"],
     status: "available",
   },
 ];
