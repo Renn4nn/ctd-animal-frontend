@@ -6,7 +6,6 @@ import { ProtectedRoute } from "@/components/protected-route";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import AnimalDetailPage from "./pages/AnimalDetail.tsx";
 import HubPage from "./pages/Hub.tsx";
 import Index from "./pages/Index.tsx";
 import LoginPage from "./pages/Login.tsx";

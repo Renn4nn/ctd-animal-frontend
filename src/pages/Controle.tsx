@@ -5,7 +5,6 @@ import { useNavigate, Outlet, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { NavLink } from "@/components/NavLink";
 import { useAuthStore } from "@/stores/auth-store";
-import { cn } from "@/lib/utils";
 
 const menuItems = [
   { to: "/controle/criar", icon: Plus, label: "Criar" },
@@ -17,7 +16,7 @@ export default function Controle() {
   const navigate = useNavigate();
   const location = useLocation();
   const logout = useAuthStore((state) => state.logout);
-  const operatorEmail = useAuthStore((state) => state.operatorEmail);
+  const operatorLogin = useAuthStore((state) => state.operatorLogin);
 
   const isRootPath = location.pathname === "/controle";
 
@@ -44,7 +43,7 @@ export default function Controle() {
               <p className="text-xs font-bold uppercase tracking-[0.15em] text-muted-foreground">
                 Controle
               </p>
-              <p className="text-xs text-muted-foreground">{operatorEmail}</p>
+              <p className="text-xs text-muted-foreground">{operatorLogin}</p>
             </div>
           </div>
 

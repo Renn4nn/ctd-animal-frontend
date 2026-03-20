@@ -12,7 +12,7 @@ import { demoCredentials, useAuthStore } from "@/stores/auth-store";
 import { Header } from "@/components/Header";
 
 const loginSchema = z.object({
-  email: z.string().email("Digite um e-mail válido."),
+  login: z.string().min(1, "Digite o login."),
   password: z.string().min(1, "Digite a senha."),
 });
 
@@ -32,7 +32,7 @@ const LoginPage = () => {
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: demoCredentials.email,
+      login: demoCredentials.login,
       password: demoCredentials.password,
     },
   });
@@ -44,7 +44,7 @@ const LoginPage = () => {
 
   const onSubmit = async (values: LoginFormValues) => {
     try {
-      await login(values.email, values.password);
+      await login(values.login, values.password);
       navigate("/home", { replace: true });
     } catch (error) {
       setError("root", {
@@ -78,15 +78,15 @@ const LoginPage = () => {
               </div>
               <CardTitle className="text-3xl">Acessar totem</CardTitle>
               <CardDescription className="text-base leading-7">
-                Entre com a credencial autorizada para abrir o hub de adoção.
+                Entre com o login e senha autorizados para abrir o hub de adoção.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold uppercase tracking-[0.18em] text-muted-foreground">E-mail</label>
-                  <Input {...register("email")} autoComplete="username" />
-                  {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
+                  <label className="text-sm font-semibold uppercase tracking-[0.18em] text-muted-foreground">Login</label>
+                  <Input {...register("login")} autoComplete="username" />
+                  {errors.login && <p className="text-sm text-destructive">{errors.login.message}</p>}
                 </div>
 
                 <div className="space-y-2">
@@ -103,16 +103,14 @@ const LoginPage = () => {
 
                 <div className="rounded-2xl border border-border bg-secondary/60 p-4 text-sm leading-6 text-secondary-foreground">
                   <strong className="block font-semibold">Acesso de teste</strong>
-                  {demoCredentials.email} · {demoCredentials.password}
+                  Login = <span className="font-mono text-red-400">{demoCredentials.login}</span> <br />
+                  Senha = <span className="font-mono text-red-400">{demoCredentials.password}</span>
                 </div>
 
                 <Button className="w-full" size="lg" type="submit" variant="hero" disabled={isSubmitting}>
                   {isSubmitting && <LoaderCircle className="mr-2 size-4 animate-spin" />}
                   Entrar no hub
                 </Button>
-                <div className="mt-4 text-center text-sm text-muted-foreground">
-                  <a href="/register">Não tem uma conta? Crie uma</a>
-                </div>
               </form>
             </CardContent>
           </Card>
