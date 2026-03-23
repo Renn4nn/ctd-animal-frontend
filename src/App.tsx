@@ -9,9 +9,12 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import HubPage from "./pages/Hub.tsx";
 import Index from "./pages/Index.tsx";
 import LoginPage from "./pages/Login.tsx";
-import ControlePage from "./pages/Controle.tsx";
+import ControlePage from "./pages/controle/Controle.tsx";
 import Home from "./pages/Home.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import Animal from "./pages/controle/Animal.tsx";
+import AnimalType from "./pages/controle/AnimalType.tsx";
+import Logs from "./pages/controle/Logs.tsx";
 
 const queryClient = new QueryClient();
 
@@ -29,9 +32,9 @@ const App = () => (
               <Route path="/home" element={<Home />} />
               <Route path="/hub" element={<HubPage />} />
               <Route path="/controle" element={<ControlePage />}>
-                <Route path="criar" element={<div className="p-4">Página de Criar</div>} />
-                <Route path="editar" element={<div className="p-4">Página de Editar</div>} />
-                <Route path="deletar" element={<div className="p-4">Página de Deletar</div>} />
+                <Route path="animal" element={<Animal />} />
+                <Route path="animal-type" element={<AnimalType />} />
+                <Route path="logs" element={<Logs />} />
               </Route>
             </Route>
             <Route path="*" element={<NotFound />} />

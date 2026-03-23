@@ -1,4 +1,4 @@
-import { Plus, Trash2, Pencil, LogOut, Wrench } from "lucide-react";
+import { Settings, Trash2, Pencil, LogOut, Wrench } from "lucide-react";
 import { motion } from "framer-motion";
 import { useNavigate, Outlet, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -6,9 +6,9 @@ import { NavLink } from "@/components/NavLink";
 import { useAuthStore } from "@/stores/auth-store";
 
 const menuItems = [
-  { to: "/controle/criar", icon: Plus, label: "Criar" },
-  { to: "/controle/editar", icon: Pencil, label: "Editar" },
-  { to: "/controle/deletar", icon: Trash2, label: "Deletar" },
+  { to: "/controle/animal", icon: Settings, label: "Gerenciar Animal" },
+  { to: "/controle/animal-type", icon: Settings, label: "Gerenciar Tipos de Animal" },
+  { to: "/controle/logs", icon: Settings, label: "Relatórios" },
 ];
 
 export default function Controle() {
