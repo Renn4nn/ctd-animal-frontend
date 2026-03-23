@@ -1,31 +1,36 @@
-export type AnimalType = "dog" | "cat";
-export type AnimalStatus = "available" | "adopted";
+export type AnimalSize = "Pequeno" | "Medio" | "Grande";
+export type AnimalSex = "Macho" | "Femea";
+export type AnimalStatus = "Disponivel" | "Adotado";
 
-export interface Animal {
-  id: string;
+export type AnimalModel = {
   name: string;
-  type: AnimalType;
+  id: string;
+  description: string | null;
+  typeId: number;
   breed: string;
   age: string;
-  description: string;
-  story: string;
-  behavior: string;
+  story: string | null;
+  behavior: string | null;
   vaccines: string[];
-  size: "Pequeno" | "Médio" | "Grande";
-  sex: "Macho" | "Fêmea";
+  size: AnimalSize;
+  sex: AnimalSex;
   photos: string[];
   status: AnimalStatus;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export interface AdoptionFormValues {
+export type CreateAnimalInput = {
   name: string;
-  cpf: string;
-  phone: string;
-  email: string;
-}
-
-export interface AdoptionLog {
-  animalId: string;
-  adopter: AdoptionFormValues;
-  adoptedAt: string;
-}
+  typeId: number;
+  breed: string;
+  age: string;
+  description?: string | null;
+  story?: string | null;
+  behavior?: string | null;
+  vaccines?: string[];
+  size: "Pequeno" | "Medio" | "Grande";
+  sex: "Macho" | "Femea";
+  photos?: string[];
+  status?: "Disponivel" | "Adotado";
+};

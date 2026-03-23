@@ -1,7 +1,6 @@
-import { Plus, Trash2, Pencil, LogOut } from "lucide-react";
+import { Plus, Trash2, Pencil, LogOut, Wrench } from "lucide-react";
 import { motion } from "framer-motion";
 import { useNavigate, Outlet, useLocation } from "react-router-dom";
-
 import { Button } from "@/components/ui/button";
 import { NavLink } from "@/components/NavLink";
 import { useAuthStore } from "@/stores/auth-store";
@@ -16,7 +15,7 @@ export default function Controle() {
   const navigate = useNavigate();
   const location = useLocation();
   const logout = useAuthStore((state) => state.logout);
-  const operatorLogin = useAuthStore((state) => state.operatorLogin);
+  const operationLogin = useAuthStore((state) => state.operationLogin);
 
   const isRootPath = location.pathname === "/controle";
 
@@ -35,15 +34,15 @@ export default function Controle() {
           className="flex w-64 flex-col border-r border-white/20 bg-white/80 backdrop-blur-md"
         >
           {/* Header da Sidebar */}
-          <div className="flex items-center gap-3 border-b border-white/20 p-6">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-              <span className="text-lg font-bold text-primary">C</span>
+          <div className="flex items-center gap-3 border-b border-white/20 p-6 font-semibold align-middle">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full">
+              <span className="text-lg font-bold text-gray-700"><Wrench size={27} /></span>
             </div>
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.15em] text-muted-foreground">
                 Controle
               </p>
-              <p className="text-xs text-muted-foreground">{operatorLogin}</p>
+              <p className="text-xs text-muted-foreground">{operationLogin}</p>
             </div>
           </div>
 

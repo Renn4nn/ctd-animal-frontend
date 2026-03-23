@@ -1,16 +1,18 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-
-import { ANIMALS } from "@/data/animals";
 import { waitRandom } from "@/lib/mockApi";
-import type { AdoptionFormValues, AdoptionLog, Animal, AnimalType } from "@/types/animal";
+import { Animal } from "@/types/schema/animal.schema";
+import { AdoptionFormValues } from "@/types/adptionLog";
+import { AdptionLog } from "@/types/schema/adptionLog.schema";
+import { ANIMALS } from "@/data/animals";
+
 
 interface AnimalState {
   animals: Animal[];
-  activeType: AnimalType;
+  activeTypeId: number;
   isLoading: boolean;
-  adoptionLogs: AdoptionLog[];
-  setActiveType: (type: AnimalType) => void;
+  adoptionLogs: AdptionLog[];
+  setActiveTypeId: (typeId: number) => void;
   loadAnimals: () => Promise<void>;
   adoptAnimal: (animalId: string, adopter: AdoptionFormValues) => Promise<void>;
   findAnimal: (animalId: string) => Animal | undefined;
@@ -21,10 +23,10 @@ export const useAnimalStore = create<AnimalState>()(
   persist(
     (set, get) => ({
       animals: ANIMALS,
-      activeType: "dog",
+      activeTypeId: 1,
       isLoading: false,
       adoptionLogs: [],
-      setActiveType: (type) => set({ activeType: type }),
+      setActiveTypeId: (type: number) => set({ activeTypeId: type }),
       loadAnimals: async () => {
         set({ isLoading: true });
         await waitRandom();
@@ -38,17 +40,19 @@ export const useAnimalStore = create<AnimalState>()(
           animals: get().animals.map((animal) =>
             animal.id === animalId
               ? {
-                  ...animal,
-                  status: "adopted",
-                }
+                ...animal,
+                status: "Adotado",
+              }
               : animal,
           ),
           adoptionLogs: [
-            ...get().adoptionLogs,
             {
               animalId,
-              adopter,
-              adoptedAt: new Date().toISOString(),
+              adopterName: adopter.name,
+              adopterCpf: adopter.cpf,
+              adopterPhone: adopter.phone,
+              adopterEmail: adopter.email,
+              adoptedAt: new Date(),
             },
           ],
           isLoading: false,
@@ -58,15 +62,15 @@ export const useAnimalStore = create<AnimalState>()(
       resetAnimals: () =>
         set({
           animals: ANIMALS,
-          activeType: "dog",
+          activeTypeId: 1,
           isLoading: false,
           adoptionLogs: [],
         }),
     }),
     {
-      name: "petmatch-animals",
+      name: "loginInformation",
       storage: createJSONStorage(() => localStorage),
-      partialize: ({ animals, adoptionLogs, activeType }) => ({ animals, adoptionLogs, activeType }),
+      partialize: ({ animals, adoptionLogs, activeTypeId }) => ({ animals, adoptionLogs, activeTypeId }),
     },
   ),
 );

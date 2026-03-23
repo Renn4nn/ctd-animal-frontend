@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Input } from "@/components/ui/input";
 import { formatCpf, formatPhone, getDigits } from "@/lib/masks";
 import { useAnimalStore } from "@/stores/animal-store";
-import type { AdoptionFormValues } from "@/types/animal";
+import type { AdoptionFormValues } from "@/types/adptionLog";
 import { toast } from "@/components/ui/sonner";
 
 const adoptionSchema = z.object({
@@ -71,11 +71,11 @@ const AnimalDetailPage = () => {
     () =>
       animal
         ? [
-            { label: "Porte", value: animal.size },
-            { label: "Sexo", value: animal.sex },
-            { label: "Raça", value: animal.breed },
-            { label: "Idade", value: animal.age },
-          ]
+          { label: "Porte", value: animal.size },
+          { label: "Sexo", value: animal.sex },
+          { label: "Raça", value: animal.breed },
+          { label: "Idade", value: animal.age },
+        ]
         : [],
     [animal],
   );
@@ -99,7 +99,7 @@ const AnimalDetailPage = () => {
 
   const handleKeyPress = (key: string) => {
     if (currentStep === "review") return;
-    
+
     const field = currentStep as FormField;
     const currentValue = form.watch(field) || "";
     let newValue = currentValue;
@@ -117,7 +117,7 @@ const AnimalDetailPage = () => {
 
   const handleBackspace = () => {
     if (currentStep === "review") return;
-    
+
     const field = currentStep as FormField;
     const currentValue = form.watch(field) || "";
     let newValue = currentValue.slice(0, -1);
@@ -155,7 +155,7 @@ const AnimalDetailPage = () => {
 
   const canProceed = () => {
     if (currentStep === "review") return true;
-    
+
     const field = currentStep as FormField;
     const value = form.watch(field);
     if (!value) return false;
@@ -287,21 +287,19 @@ const AnimalDetailPage = () => {
                                 return (
                                   <div key={step} className="flex items-center">
                                     <div
-                                      className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold transition-colors ${
-                                        isCompleted
+                                      className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold transition-colors ${isCompleted
                                           ? "bg-primary text-primary-foreground"
                                           : isCurrent
                                             ? "bg-primary text-primary-foreground ring-2 ring-primary/30"
                                             : "bg-muted text-muted-foreground"
-                                      }`}
+                                        }`}
                                     >
                                       {isCompleted ? <Check className="size-5" /> : index + 1}
                                     </div>
                                     {index < STEP_ORDER.length - 1 && (
                                       <div
-                                        className={`mx-1 h-1 w-8 rounded-full transition-colors ${
-                                          isCompleted ? "bg-primary" : "bg-muted"
-                                        }`}
+                                        className={`mx-1 h-1 w-8 rounded-full transition-colors ${isCompleted ? "bg-primary" : "bg-muted"
+                                          }`}
                                       />
                                     )}
                                   </div>
@@ -348,9 +346,9 @@ const AnimalDetailPage = () => {
                                     readOnly
                                     placeholder={
                                       currentStep === "name" ? "Digite seu nome completo" :
-                                      currentStep === "cpf" ? "000.000.000-00" :
-                                      currentStep === "phone" ? "(00) 00000-0000" :
-                                      "seu@email.com"
+                                        currentStep === "cpf" ? "000.000.000-00" :
+                                          currentStep === "phone" ? "(00) 00000-0000" :
+                                            "seu@email.com"
                                     }
                                     className="h-14 text-center text-lg"
                                   />

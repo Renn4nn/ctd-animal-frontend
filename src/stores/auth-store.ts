@@ -3,7 +3,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 
 import { wait } from "@/lib/mockApi";
 
-const DEMO_LOGIN = "ctd.admin@25!@#";
+const DEMO_LOGIN = "ctd.admin";
 const DEMO_PASSWORD = "securetepassword123!";
 
 interface AuthState {
@@ -50,7 +50,7 @@ export const useAuthStore = create<AuthState>()(
         }),
     }),
     {
-      name: "petmatch-auth",
+      name: "login-information",
       storage: createJSONStorage(() => localStorage),
       partialize: ({ sessionToken, operationLogin }) => ({ sessionToken, operationLogin }),
       onRehydrateStorage: () => (state) => {
