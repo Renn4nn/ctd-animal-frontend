@@ -1,5 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table"
-import { Pencil, Trash2 } from "lucide-react"
+import { Pencil } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 
 export type Animal = {
@@ -58,11 +58,12 @@ export const columnsAnimal: ColumnDef<Animal>[] = [
       const animal = row.original
       return (
         <div className="flex items-center justify-end gap-2">
-          <button className="p-2 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-500 hover:text-white transition-all">
+          <button className="flex items-center justify-center w-9 h-9 rounded-md bg-amber-500 text-white hover:bg-amber-600 transition-all">
             <Pencil size={16} />
           </button>
-          <button className="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-500 hover:text-white transition-all">
-            <Trash2 size={16} />
+
+          <button className="flex items-center justify-center w-9 h-9 rounded-md bg-red-500 text-white hover:bg-red-600 transition-all">
+            X
           </button>
         </div>
       )
