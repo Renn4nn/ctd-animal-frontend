@@ -12,9 +12,9 @@ import LoginPage from "./pages/Login.tsx";
 import ControlePage from "./pages/controle/Controle.tsx";
 import Home from "./pages/Home.tsx";
 import NotFound from "./pages/NotFound.tsx";
-import Animal from "./pages/controle/Animal.tsx";
-import AnimalType from "./pages/controle/AnimalType.tsx";
-import Logs from "./pages/controle/Logs.tsx";
+import AnimalPage from "./pages/controle/Animal/page.tsx";
+import AnimalTypePage from "./pages/controle/AnimalType/page.tsx";
+import Logs from "./pages/controle/Logs/page.tsx";
 
 const queryClient = new QueryClient();
 
@@ -32,8 +32,8 @@ const App = () => (
               <Route path="/home" element={<Home />} />
               <Route path="/hub" element={<HubPage />} />
               <Route path="/controle" element={<ControlePage />}>
-                <Route path="animal" element={<Animal />} />
-                <Route path="animal-type" element={<AnimalType />} />
+                <Route path="animal" element={<AnimalPage />} />
+                <Route path="animal-type" element={<AnimalTypePage />} />
                 <Route path="logs" element={<Logs />} />
               </Route>
             </Route>
