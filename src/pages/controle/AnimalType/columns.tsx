@@ -3,30 +3,32 @@ import { Pencil, Trash2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 
 export type AnimalType = {
-  id: string
-  name: string
-  status: "ATIVO" | "INATIVO"
+  id: number
+  label: string
+  active: boolean
+  createdAt?: Date
+  updatedAt?: Date
 }
 
 export const columnsType: ColumnDef<AnimalType>[] = [
   {
-    accessorKey: "name",
-    header: "Tipo de Animal",
+    accessorKey: "label", // Mudamos de 'name' para 'label' conforme seu Zod
+    header: "Tipo",
   },
   {
-    accessorKey: "status",
-    header: "Status",
+    accessorKey: "active", // Mudamos de 'status' para 'active' (boolean)
+    header: "Situação",
     cell: ({ row }) => {
-      const status = row.getValue("status") as string
+      const active = row.getValue("active") as boolean
       return (
         <Badge
           className={
-            status === "ATIVO"
-              ? "bg-green-100 text-green-700 hover:bg-green-200 border-none px-3"
-              : "bg-red-100 text-red-700 hover:bg-red-200 border-none px-3"
+            active
+              ? "bg-green-100 text-green-700 hover:bg-green-200 border-none"
+              : "bg-slate-100 text-slate-700 hover:bg-slate-200 border-none"
           }
         >
-          {status}
+          {active ? "ATIVO" : "INATIVO"}
         </Badge>
       )
     },
@@ -38,16 +40,10 @@ export const columnsType: ColumnDef<AnimalType>[] = [
       const type = row.original
       return (
         <div className="flex items-center justify-end gap-2">
-          <button
-            onClick={() => console.log("Editar Tipo", type.id)}
-            className="p-2 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-500 hover:text-white transition-all"
-          >
+          <button className="p-2 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-500 hover:text-white transition-all">
             <Pencil size={16} />
           </button>
-          <button
-            onClick={() => console.log("Excluir Tipo", type.id)}
-            className="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-500 hover:text-white transition-all"
-          >
+          <button className="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-500 hover:text-white transition-all">
             <Trash2 size={16} />
           </button>
         </div>

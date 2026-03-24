@@ -1,9 +1,10 @@
-import * as React from "react" // Importante para o useState
+import * as React from "react"
 import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
+  getFilteredRowModel,
   useReactTable,
 } from "@tanstack/react-table"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -14,18 +15,26 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue
-} from "@/components/ui/select" // Certifique-se de ter o Select do shadcn
+} from "@/components/ui/select"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
+  filterValue?: string
+  onFilterChange?: (value: string) => void
+  filterPlaceholder?: string
 }
 
-export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
-  // Estado para controlar a paginação (página atual e tamanho)
+export function DataTable<TData, TValue>({
+  columns,
+  data,
+  filterValue,
+  onFilterChange,
+  filterPlaceholder,
+}: DataTableProps<TData, TValue>) {
   const [pagination, setPagination] = React.useState({
     pageIndex: 0,
-    pageSize: 5, // Limite padrão por página
+    pageSize: 5,
   })
 
   const table = useReactTable({
@@ -33,9 +42,12 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    onPaginationChange: setPagination, // Conecta o estado à tabela
+    getFilteredRowModel: getFilteredRowModel(),
+    onPaginationChange: setPagination,
+    onGlobalFilterChange: onFilterChange,
     state: {
       pagination,
+      globalFilter: filterValue,
     },
   })
 
@@ -94,7 +106,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                 <SelectValue placeholder={table.getState().pagination.pageSize} />
               </SelectTrigger>
               <SelectContent side="top">
-                {[5, 10, 20, 30, 40, 50].map((pageSize) => (
+                {[5, 10, 15].map((pageSize) => (
                   <SelectItem key={pageSize} value={`${pageSize}`}>
                     {pageSize}
                   </SelectItem>

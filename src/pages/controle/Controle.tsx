@@ -92,6 +92,7 @@ export default function Controle() {
             >
               <Outlet />
             </motion.div>
+            <div className="h-16 p-1" />
           </div>
         </main>
       </div>
