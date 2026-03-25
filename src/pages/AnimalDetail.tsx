@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { z } from "zod";
+import { useQuery } from "@tanstack/react-query";
 
 import { AnimalGallery } from "@/components/animal-gallery";
 import { Button } from "@/components/ui/button";
@@ -15,6 +16,8 @@ import { formatCpf, formatPhone, getDigits } from "@/lib/masks";
 import { useAnimalStore } from "@/stores/animal-store";
 import type { AdoptionFormValues } from "@/types/adptionLog";
 import { toast } from "@/components/ui/sonner";
+import { apiRequest } from "@/lib/api/request";
+import { Animal } from "@/types/schema/animal.schema";
 
 const adoptionSchema = z.object({
   name: z.string().min(3, "Informe o nome completo."),
@@ -52,20 +55,20 @@ const AnimalDetailPage = () => {
   const [submitted, setSubmitted] = useState(false);
   const [currentStep, setCurrentStep] = useState<Step>("name");
   const [formOpen, setFormOpen] = useState(false);
-  const animal = useAnimalStore((state) => state.findAnimal(id));
   const adoptAnimal = useAnimalStore((state) => state.adoptAnimal);
-  const isLoading = useAnimalStore((state) => state.isLoading);
 
-  const form = useForm<AdoptionFormValues>({
-    resolver: zodResolver(adoptionSchema),
-    defaultValues: {
-      name: "",
-      cpf: "",
-      phone: "",
-      email: "",
-    },
-    mode: "onChange",
+  const { data: response, isLoading: isLoadingAnimal } = useQuery({
+    queryKey: ['animal', id],
+    queryFn: () => apiRequest<Animal, never>({
+      method: 'get',
+      url: `/animal/${id}`
+    }),
+    enabled: !!id
   });
+
+  const animal = response && 'data' in response ? response.data : null;
+  const isLoadingStore = useAnimalStore((state) => state.isLoading);
+  const isLoading = isLoadingAnimal || isLoadingStore;
 
   const summary = useMemo(
     () =>
@@ -80,7 +83,31 @@ const AnimalDetailPage = () => {
     [animal],
   );
 
-  if (!animal || animal.status !== "available") {
+  const form = useForm<AdoptionFormValues>({
+    resolver: zodResolver(adoptionSchema),
+    defaultValues: {
+      name: "",
+      cpf: "",
+      phone: "",
+      email: "",
+    },
+    mode: "onChange",
+  });
+
+  // Early returns after all hooks are defined
+  if (isLoadingAnimal) {
+    return (
+      <main className="min-h-screen px-4 py-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl rounded-[2rem] border border-border/60 bg-card/70 p-4 shadow-soft backdrop-blur-sm sm:p-6 lg:p-8">
+          <div className="flex min-h-[400px] items-center justify-center">
+            <LoaderCircle className="size-8 animate-spin text-primary" />
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  if (!animal || animal.status !== "Disponivel") {
     return <Navigate to="/hub" replace />;
   }
 
@@ -288,10 +315,10 @@ const AnimalDetailPage = () => {
                                   <div key={step} className="flex items-center">
                                     <div
                                       className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold transition-colors ${isCompleted
-                                          ? "bg-primary text-primary-foreground"
-                                          : isCurrent
-                                            ? "bg-primary text-primary-foreground ring-2 ring-primary/30"
-                                            : "bg-muted text-muted-foreground"
+                                        ? "bg-primary text-primary-foreground"
+                                        : isCurrent
+                                          ? "bg-primary text-primary-foreground ring-2 ring-primary/30"
+                                          : "bg-muted text-muted-foreground"
                                         }`}
                                     >
                                       {isCompleted ? <Check className="size-5" /> : index + 1}

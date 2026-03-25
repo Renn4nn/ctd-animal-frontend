@@ -1,37 +1,58 @@
 import { LogOut, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
-import { useEffect, useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { AnimalCard } from "@/components/animal-card";
 import { HubSkeleton } from "@/components/hub-skeleton";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { animalTypeLabels } from "@/data/animals";
-import { useAnimalStore } from "@/stores/animal-store";
+import { apiRequest } from "@/lib/api/request";
+import { Animal } from "@/types/schema/animal.schema";
+import { AnimalType } from "@/types/schema/animalType.schema";
 import { useAuthStore } from "@/stores/auth-store";
-
 
 const HubPage = () => {
   const navigate = useNavigate();
   const logout = useAuthStore((state) => state.logout);
-  const animals = useAnimalStore((state) => state.animals);
-  const activeType = useAnimalStore((state) => state.activeType);
-  const isLoading = useAnimalStore((state) => state.isLoading);
-  const loadAnimals = useAnimalStore((state) => state.loadAnimals);
-  const setActiveType = useAnimalStore((state) => state.setActiveType);
+  const [activeTypeId, setActiveTypeId] = useState<number | null>(null);
 
-  useEffect(() => {
-    void loadAnimals();
-  }, [activeType, loadAnimals]);
+  const { data: animalsResponse, isLoading: isLoadingAnimals } = useQuery({
+    queryKey: ['hub-animals'],
+    queryFn: () => apiRequest<Animal[]>({
+      method: 'get',
+      url: '/animal'
+    })
+  });
+
+  const { data: typesResponse, isLoading: isLoadingTypes } = useQuery({
+    queryKey: ['hub-animal-types'],
+    queryFn: () => apiRequest<AnimalType[]>({
+      method: 'get',
+      url: '/animal-type'
+    })
+  });
+
+  const animals = animalsResponse && 'data' in animalsResponse ? animalsResponse.data : [];
+  const animalTypes = typesResponse && 'data' in typesResponse ? typesResponse.data.filter(t => t.active) : [];
+
+  // Set initial active type when types load
+  if (activeTypeId === null && animalTypes.length > 0) {
+    setActiveTypeId(animalTypes[0].id);
+  }
+
+  const activeType = animalTypes.find(t => t.id === activeTypeId);
 
   const availableAnimals = useMemo(
-    () => animals.filter((animal) => animal.type === activeType && animal.status === "available"),
-    [activeType, animals],
+    () => animals.filter((animal) => animal.typeId === activeTypeId && animal.status === "Disponivel"),
+    [activeTypeId, animals]
   );
 
   const handleTabChange = (value: string) => {
-    setActiveType(value);
+    setActiveTypeId(Number(value));
   };
+
+  const isLoading = isLoadingAnimals || isLoadingTypes;
 
   return (
     <main className="min-h-screen px-4 py-4 sm:px-6 lg:px-8">
@@ -64,17 +85,20 @@ const HubPage = () => {
                 <p className="text-sm font-semibold uppercase tracking-[0.2em] text-muted-foreground">Animais disponíveis</p>
                 <h2 className="mt-2 text-2xl font-bold">Selecione a categoria para atendimento</h2>
               </div>
-              <Tabs value={activeType} onValueChange={handleTabChange} className="w-full sm:w-auto">
-                <TabsList className="grid w-full grid-cols-2 sm:w-auto">
-                  <TabsTrigger value="dog">Cachorros</TabsTrigger>
-                  <TabsTrigger value="cat">Gatos</TabsTrigger>
+              <Tabs value={activeTypeId?.toString()} onValueChange={handleTabChange} className="w-full sm:w-auto">
+                <TabsList className="grid w-full sm:w-auto" style={{ gridTemplateColumns: `repeat(${animalTypes.length}, minmax(0, 1fr))` }}>
+                  {animalTypes.map((type) => (
+                    <TabsTrigger key={type.id} value={type.id.toString()}>
+                      {type.label}
+                    </TabsTrigger>
+                  ))}
                 </TabsList>
               </Tabs>
             </div>
 
-            <Tabs value={activeType} className="mt-6">
-              {(["dog", "cat"]).map((type) => (
-                <TabsContent key={type} value={type}>
+            <Tabs value={activeTypeId?.toString()} className="mt-6">
+              {animalTypes.map((type) => (
+                <TabsContent key={type.id} value={type.id.toString()}>
                   {isLoading ? (
                     <HubSkeleton />
                   ) : availableAnimals.length ? (
@@ -86,7 +110,7 @@ const HubPage = () => {
                   ) : (
                     <div className="flex min-h-[300px] flex-col items-center justify-center rounded-[1.5rem] border border-dashed border-border bg-card/70 px-6 text-center">
                       <Sparkles className="size-10 text-primary" />
-                      <h3 className="mt-4 text-xl font-bold">Nenhum {animalTypeLabels[type].toLowerCase()} disponível</h3>
+                      <h3 className="mt-4 text-xl font-bold">Nenhum {type.label.toLowerCase()} disponível</h3>
                       <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
                         Todos os animais dessa categoria já foram reservados no fluxo simulado.
                       </p>

@@ -12,6 +12,7 @@ import LoginPage from "./pages/Login.tsx";
 import ControlePage from "./pages/controle/Controle.tsx";
 import Home from "./pages/Home.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import AnimalDetailPage from "./pages/AnimalDetail.tsx";
 import AnimalPage from "./pages/controle/Animal/page.tsx";
 import AnimalTypePage from "./pages/controle/AnimalType/page.tsx";
 import Logs from "./pages/controle/Logs/page.tsx";
@@ -31,6 +32,7 @@ const App = () => (
             <Route element={<ProtectedRoute />}>
               <Route path="/home" element={<Home />} />
               <Route path="/hub" element={<HubPage />} />
+              <Route path="/animal/:id" element={<AnimalDetailPage />} />
               <Route path="/controle" element={<ControlePage />}>
                 <Route path="animal" element={<AnimalPage />} />
                 <Route path="animal-type" element={<AnimalTypePage />} />
