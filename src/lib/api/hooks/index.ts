@@ -1,7 +1,4 @@
 // função para tratar a resposta de uma promise de requisição à API
-
-'use client'
-
 import type { ApiResponse } from '@/types/api/api.response.types'
 import type { DataType } from '@/types/api/common.types'
 import { useEffect, useState } from 'react'

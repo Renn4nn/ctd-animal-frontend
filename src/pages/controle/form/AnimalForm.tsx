@@ -2,7 +2,7 @@ import { useControlAnimal } from "@/stores/controle/animal-controll"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { Animal } from "@/types/schema/animal.schema"
+import { Animal, AnimalUpdate } from "@/types/schema/animal.schema"
 import {
   Select,
   SelectContent,
@@ -10,13 +10,44 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select"
+import { useEffect, useState } from "react"
+import { apiRequest } from "@/lib/api/request"
+import { toast } from "@/components/ui/sonner"
+import { useQueryClient } from "@tanstack/react-query"
 
 export default function AnimalForm() {
   const { editingAnimal, clearEditing } = useControlAnimal()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const queryClient = useQueryClient()
 
   if (!editingAnimal) return null
   const animal: Animal = editingAnimal
 
+  const [formData, setFormData] = useState<AnimalUpdate>(() => ({
+    name: animal.name,
+    breed: animal.breed,
+    sex: animal.sex,
+    size: animal.size,
+    age: animal.age,
+    status: animal.status,
+    description: animal.description,
+    story: animal.story,
+    behavior: animal.behavior,
+  }))
+
+  useEffect(() => {
+    setFormData({
+      name: animal.name,
+      breed: animal.breed,
+      sex: animal.sex,
+      size: animal.size,
+      age: animal.age,
+      status: animal.status,
+      description: animal.description,
+      story: animal.story,
+      behavior: animal.behavior,
+    })
+  }, [animal.id])
 
   const formatDate = (date?: string | Date) => {
     if (!date) return ""
@@ -33,28 +64,74 @@ export default function AnimalForm() {
     })
   }
 
+  async function updateAnimal() {
+    if (isSubmitting) return
+    setIsSubmitting(true)
+
+    const payload: AnimalUpdate = {
+      ...formData,
+      description: formData.description?.trim() ? formData.description : null,
+      story: formData.story?.trim() ? formData.story : null,
+      behavior: formData.behavior?.trim() ? formData.behavior : null,
+    }
+
+    const res = await apiRequest<Animal, AnimalUpdate>({
+      method: 'patch',
+      url: `/animal/${animal.id}`,
+      data: payload,
+    })
+
+    if ('data' in res) {
+      toast.success('Animal atualizado com sucesso!')
+      await queryClient.invalidateQueries({ queryKey: ['animals'] })
+      clearEditing()
+      setIsSubmitting(false)
+      return
+    }
+
+    if ('error' in res) {
+      toast.error(res.error.message)
+    } else if ('errors' in res) {
+      toast.error(res.errors[0]?.message ?? 'Erro ao atualizar animal')
+    } else {
+      toast.error('Erro ao atualizar animal')
+    }
+
+    setIsSubmitting(false)
+  }
+
   return (
     <div className="">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Nome */}
         <div className="space-y-1">
           <label className="text-sm font-medium text-slate-700">Nome</label>
-          <Input defaultValue={animal.name} />
+          <Input
+            value={formData.name ?? ""}
+            onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
+          />
         </div>
 
         {/* Raça */}
         <div className="space-y-1">
           <label className="text-sm font-medium text-slate-700">Raça</label>
-          <Input defaultValue={animal.breed} />
+          <Input
+            value={formData.breed ?? ""}
+            onChange={(e) => setFormData((prev) => ({ ...prev, breed: e.target.value }))}
+          />
         </div>
 
         {/* Sexo */}
         <div className="space-y-1">
           <label className="text-sm font-medium text-slate-700">Sexo</label>
-          <Select defaultValue={animal.sex}>
+          <Select
+            value={formData.sex}
+            onValueChange={(value) => setFormData((prev) => ({ ...prev, sex: value as Animal['sex'] }))}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Selecione o sexo" />
             </SelectTrigger>
+
             <SelectContent>
               <SelectItem value="Macho">Macho</SelectItem>
               <SelectItem value="Femea">Fêmea</SelectItem>
@@ -65,10 +142,14 @@ export default function AnimalForm() {
         {/* Porte */}
         <div className="space-y-1">
           <label className="text-sm font-medium text-slate-700">Porte</label>
-          <Select defaultValue={animal.size}>
+          <Select
+            value={formData.size}
+            onValueChange={(value) => setFormData((prev) => ({ ...prev, size: value as Animal['size'] }))}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Selecione o porte" />
             </SelectTrigger>
+
             <SelectContent>
               <SelectItem value="Pequeno">Pequeno</SelectItem>
               <SelectItem value="Medio">Médio</SelectItem>
@@ -80,16 +161,23 @@ export default function AnimalForm() {
         {/* Idade */}
         <div className="space-y-1">
           <label className="text-sm font-medium text-slate-700">Idade</label>
-          <Input defaultValue={animal.age} />
+          <Input
+            value={formData.age ?? ""}
+            onChange={(e) => setFormData((prev) => ({ ...prev, age: e.target.value }))}
+          />
         </div>
 
         {/* Status */}
         <div className="space-y-1">
           <label className="text-sm font-medium text-slate-700">Status</label>
-          <Select defaultValue={animal.status}>
+          <Select
+            value={formData.status}
+            onValueChange={(value) => setFormData((prev) => ({ ...prev, status: value as Animal['status'] }))}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Status" />
             </SelectTrigger>
+
             <SelectContent>
               <SelectItem value="Disponivel">Disponível</SelectItem>
               <SelectItem value="Adotado">Adotado</SelectItem>
@@ -100,19 +188,28 @@ export default function AnimalForm() {
         {/* Descrição - Full Width */}
         <div className="space-y-1 md:col-span-2">
           <label className="text-sm font-medium text-slate-700">Descrição</label>
-          <Textarea defaultValue={animal.description ?? ""} />
+          <Textarea
+            value={formData.description ?? ""}
+            onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
+          />
         </div>
 
         {/* História - Full Width */}
         <div className="space-y-1 md:col-span-2">
           <label className="text-sm font-medium text-slate-700">História</label>
-          <Textarea defaultValue={animal.story ?? ""} />
+          <Textarea
+            value={formData.story ?? ""}
+            onChange={(e) => setFormData((prev) => ({ ...prev, story: e.target.value }))}
+          />
         </div>
 
         {/* Comportamento - Full Width */}
         <div className="space-y-1 md:col-span-2">
           <label className="text-sm font-medium text-slate-700">Comportamento</label>
-          <Input defaultValue={animal.behavior ?? ""} />
+          <Input
+            value={formData.behavior ?? ""}
+            onChange={(e) => setFormData((prev) => ({ ...prev, behavior: e.target.value }))}
+          />
         </div>
 
         <div className="pt-8 md:col-span-2 space-x-8">
@@ -123,13 +220,11 @@ export default function AnimalForm() {
 
       <div className="flex gap-3 mt-8 pt-4 border-t">
         <Button
-          className="bg-blue-600 hover:bg-blue-700"
-          onClick={() => {
-            // Lógica de update aqui
-            clearEditing()
-          }}
+          className="bg-blue-600 hover:bg-blue-700 min-w-[140px]"
+          onClick={updateAnimal}
+          disabled={isSubmitting}
         >
-          Salvar Alterações
+          {isSubmitting ? "Salvando..." : "Salvar Alterações"}
         </Button>
         <Button variant="outline" onClick={clearEditing}>
           Cancelar

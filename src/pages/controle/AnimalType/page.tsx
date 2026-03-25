@@ -2,35 +2,27 @@ import { Plus, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { DataTable } from "../data-table"
-import { columnsType } from "./columns"
+import { AnimalType, columnsType } from "./columns"
 import { useState } from "react"
 import { useControlAnimalType } from "@/stores/controle/animal-type"
 import AnimalTypeForm from "../form/AnimalTypeForm"
-
-const mockTypes = [
-  { id: 1, label: "Cachorro", active: true, createdAt: new Date(), updatedAt: new Date() },
-  { id: 2, label: "Gato", active: true, createdAt: new Date(), updatedAt: new Date() },
-  { id: 3, label: "Pássaro", active: false, createdAt: new Date(), updatedAt: new Date() },
-  { id: 4, label: "Peixe", active: true, createdAt: new Date(), updatedAt: new Date() },
-  { id: 5, label: "Roedor", active: false, createdAt: new Date(), updatedAt: new Date() },
-  { id: 6, label: "Réptil", active: true, createdAt: new Date(), updatedAt: new Date() },
-  { id: 7, label: "Anfíbio", active: false, createdAt: new Date(), updatedAt: new Date() },
-  { id: 8, label: "Equídeo", active: true, createdAt: new Date(), updatedAt: new Date() },
-  { id: 9, label: "Felino", active: false, createdAt: new Date(), updatedAt: new Date() },
-  { id: 10, label: "Canídeo", active: true, createdAt: new Date(), updatedAt: new Date() },
-  { id: 11, label: "Ovídeo", active: false, createdAt: new Date(), updatedAt: new Date() },
-  { id: 12, label: "Suídeo", active: true, createdAt: new Date(), updatedAt: new Date() },
-  { id: 13, label: "Bovídeo", active: false, createdAt: new Date(), updatedAt: new Date() },
-  { id: 14, label: "Caprino", active: true, createdAt: new Date(), updatedAt: new Date() },
-  { id: 15, label: "Ovinocaprídeo", active: false, createdAt: new Date(), updatedAt: new Date() },
-  { id: 16, label: "Equídeo", active: true, createdAt: new Date(), updatedAt: new Date() },
-  { id: 17, label: "Equídeo", active: true, createdAt: new Date(), updatedAt: new Date() },
-];
+import { useQuery } from "@tanstack/react-query"
+import { apiRequest } from "@/lib/api/request"
 
 export default function AnimalTypePage() {
   const [filterValue, setFilterValue] = useState("")
-
   const { isEditing } = useControlAnimalType()
+
+
+  const { data: response, isLoading, isError } = useQuery({
+    queryKey: ['animal-types'],
+    queryFn: () => apiRequest<AnimalType[]>({
+      method: 'get',
+      url: '/animal-type'
+    })
+  })
+
+  const animalTypes = response && 'data' in response ? response.data : []
 
 
   if (isEditing) {
@@ -64,8 +56,13 @@ export default function AnimalTypePage() {
           onChange={(e) => setFilterValue(e.target.value)}
         />
       </div>
-
-      <DataTable columns={columnsType} data={mockTypes} filterValue={filterValue} onFilterChange={setFilterValue} />
+      {isLoading ? (
+        <div className="p-10 text-center">Carregando lista de animais...</div>
+      ) : isError ? (
+        <div className="p-10 text-center text-red-500">Erro ao carregar animais.</div>
+      ) : (
+        <DataTable columns={columnsType} data={animalTypes} filterValue={filterValue} onFilterChange={setFilterValue} />
+      )}
     </main>
   )
 }
