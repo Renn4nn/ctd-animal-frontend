@@ -6,11 +6,13 @@ import { AnimalType, columnsType } from "./columns"
 import { useState } from "react"
 import { useControlAnimalType } from "@/stores/controle/animal-type"
 import AnimalTypeForm from "../form/AnimalTypeForm"
+import AnimalTypeCreateForm from "../form/AnimalTypeCreateForm"
 import { useQuery } from "@tanstack/react-query"
 import { apiRequest } from "@/lib/api/request"
 
 export default function AnimalTypePage() {
   const [filterValue, setFilterValue] = useState("")
+  const [isCreating, setIsCreating] = useState(false)
   const { isEditing } = useControlAnimalType()
 
 
@@ -33,13 +35,24 @@ export default function AnimalTypePage() {
     )
   }
 
+  if (isCreating) {
+    return (
+      <main className="p-6">
+        <AnimalTypeCreateForm onCancel={() => setIsCreating(false)} />
+      </main>
+    )
+  }
+
   return (
     <main>
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
         <h1 className="text-2xl font-bold">
           Tipos de Animais
         </h1>
-        <Button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-6 h-12 shadow-lg shadow-blue-200 transition-all active:scale-95">
+        <Button
+          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-6 h-12 shadow-lg shadow-blue-200 transition-all active:scale-95"
+          onClick={() => setIsCreating(true)}
+        >
           <Plus size={20} />
           Novo
         </Button>

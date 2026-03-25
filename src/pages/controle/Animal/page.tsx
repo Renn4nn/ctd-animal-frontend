@@ -7,13 +7,14 @@ import { useState } from "react"
 import { Animal } from "@/types/schema/animal.schema"
 import { useControlAnimal } from "@/stores/controle/animal-controll"
 import AnimalForm from "../form/AnimalForm"
+import AnimalCreateForm from "../form/AnimalCreateForm"
 import { apiRequest } from "@/lib/api/request"
 import { useQuery } from "@tanstack/react-query"
 
 export default function AnimalPage() {
   const [filterValue, setFilterValue] = useState("")
+  const [isCreating, setIsCreating] = useState(false)
   const { isEditing } = useControlAnimal()
-
 
   const { data: response, isLoading, isError } = useQuery({
     queryKey: ['animals'],
@@ -23,8 +24,7 @@ export default function AnimalPage() {
     })
   })
 
-
-  const animals = response && !('error' in response || 'erros' in response) ? response.data : []
+  const animals = response && 'data' in response ? response.data : []
 
   if (isEditing) {
     return (
@@ -34,12 +34,23 @@ export default function AnimalPage() {
     )
   }
 
+  if (isCreating) {
+    return (
+      <main className="p-6">
+        <AnimalCreateForm onCancel={() => setIsCreating(false)} />
+      </main>
+    )
+  }
+
   return (
     <main>
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
         <h1 className="text-2xl font-bold">Listagem de Animais</h1>
 
-        <Button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-6 h-12 shadow-lg shadow-blue-200 transition-all active:scale-95">
+        <Button
+          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-6 h-12 shadow-lg shadow-blue-200 transition-all active:scale-95"
+          onClick={() => setIsCreating(true)}
+        >
           <Plus size={20} />
           Novo
         </Button>

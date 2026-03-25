@@ -1,12 +1,5 @@
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "@/components/ui/select"
 import { useControlAnimalType } from "@/stores/controle/animal-type"
 import { useEffect, useState } from "react"
 import { AnimalType, AnimalTypeUpdate } from "@/types/schema/animalType.schema"
@@ -24,13 +17,11 @@ export default function AnimalTypeForm() {
 
   const [formData, setFormData] = useState<AnimalTypeUpdate>(() => ({
     label: animalType.label,
-    active: animalType.active,
   }))
 
   useEffect(() => {
     setFormData({
       label: animalType.label,
-      active: animalType.active,
     })
   }, [animalType.id])
 
@@ -55,7 +46,6 @@ export default function AnimalTypeForm() {
 
     const payload: AnimalTypeUpdate = {
       label: formData.label?.trim() ? formData.label : undefined,
-      active: formData.active,
     }
 
     const res = await apiRequest<AnimalType, AnimalTypeUpdate>({
@@ -93,24 +83,6 @@ export default function AnimalTypeForm() {
             value={formData.label ?? ""}
             onChange={(e) => setFormData((prev) => ({ ...prev, label: e.target.value }))}
           />
-        </div>
-
-        {/* Situação */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-700">Situação</label>
-          <Select
-            value={formData.active ? "true" : "false"}
-            onValueChange={(value) => setFormData((prev) => ({ ...prev, active: value === "true" }))}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Selecione a situação" />
-            </SelectTrigger>
-
-            <SelectContent>
-              <SelectItem value="true">ATIVO</SelectItem>
-              <SelectItem value="false">INATIVO</SelectItem>
-            </SelectContent>
-          </Select>
         </div>
 
         <div className="pt-8 md:col-span-2 space-x-8">

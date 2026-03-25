@@ -1,1 +1,4 @@
-export type DataType = Record<string, unknown> | Record<string, unknown>[]
+export type DataType =
+  | Record<string, unknown>
+  | Record<string, unknown>[]
+  | FormData
