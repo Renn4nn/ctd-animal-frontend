@@ -2,18 +2,183 @@ import { Plus, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { DataTable } from "../data-table"
-import { columnsAnimal, type Animal } from "./columns"
+import { columnsAnimal } from "./columns"
 import { useState } from "react"
+import { Animal } from "@/types/schema/animal.schema"
+import { useControlAnimal } from "@/stores/controle/animal-controll"
+import AnimalForm from "../form/AnimalForm"
 
 const data: Animal[] = [
-  { id: "1", name: "Rex", status: "Disponível", breed: "Vira-lata", sex: "Macho", typeId: 1, age: "2 anos", vaccines: ["Raiva"], size: "Médio", description: "", behavior: "", story: "", photos: [], createdAt: new Date(), updatedAt: new Date() },
-  { id: "2", name: "Bobby", status: "Disponível", breed: "Poodle", sex: "Macho", typeId: 1, age: "1 ano", vaccines: [], size: "Pequeno", description: null, behavior: null, story: null, photos: [], createdAt: new Date(), updatedAt: new Date() },
-  { id: "3", name: "Kiosk", status: "Adotado", breed: "Siamês", sex: "Fêmea", typeId: 2, age: "3 anos", vaccines: ["V4"], size: "Pequeno", description: null, behavior: null, story: null, photos: [], createdAt: new Date(), updatedAt: new Date() },
-  { id: "4", name: "Luna", status: "Disponível", breed: "Labrador", sex: "Fêmea", typeId: 1, age: "4 anos", vaccines: ["Raiva", "Leptospirose"], size: "Grande", description: "Cara e brincalhona", behavior: "Amigável", story: "Encontrada abandonada", photos: [], createdAt: new Date(), updatedAt: new Date() },
+  {
+    id: "1",
+    name: "Rex",
+    status: "Disponivel",
+    breed: "Vira-lata",
+    sex: "Macho",
+    typeId: 1,
+    age: "2 anos",
+    vaccines: ["Raiva", "V8"],
+    size: "Medio",
+    description: "Muito fofo e cheio de energia.",
+    behavior: "Dócil, brincalhão e sociável com outros cães.",
+    story: "Abandonado em um beco e resgatado por voluntários.",
+    photos: ["https://example.com/rex1.jpg"],
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    id: "2",
+    name: "Bobby",
+    status: "Disponivel",
+    breed: "Poodle",
+    sex: "Macho",
+    typeId: 1,
+    age: "1 ano",
+    vaccines: ["V8"],
+    size: "Pequeno",
+    description: "Pequeno, elegante e muito apegado.",
+    behavior: "Carinhoso e um pouco tímido com estranhos.",
+    story: "Entregue por uma família que não podia mais cuidar.",
+    photos: ["https://example.com/bobby1.jpg"],
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    id: "3",
+    name: "Kiosk",
+    status: "Adotado",
+    breed: "Siamês",
+    sex: "Femea",
+    typeId: 2,
+    age: "3 anos",
+    vaccines: ["V4", "Raiva"],
+    size: "Pequeno",
+    description: "Gata elegante e independente.",
+    behavior: "Tranquila, gosta de observar o ambiente.",
+    story: "Resgatada de uma colônia de gatos de rua.",
+    photos: ["https://example.com/kiosk1.jpg"],
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    id: "4",
+    name: "Luna",
+    status: "Disponivel",
+    breed: "Labrador",
+    sex: "Femea",
+    typeId: 1,
+    age: "4 anos",
+    vaccines: ["Raiva", "Leptospirose", "V10"],
+    size: "Grande",
+    description: "Carinhosa e extremamente brincalhona.",
+    behavior: "Amigável, ótima com crianças e outros animais.",
+    story: "Encontrada abandonada em um parque.",
+    photos: ["https://example.com/luna1.jpg"],
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+
+  // NOVOS DADOS 👇
+
+  {
+    id: "5",
+    name: "Mingau",
+    status: "Disponivel",
+    breed: "Persa",
+    sex: "Macho",
+    typeId: 2,
+    age: "6 anos",
+    vaccines: ["V4"],
+    size: "Pequeno",
+    description: "Gato calmo, ideal para apartamentos.",
+    behavior: "Preguiçoso, adora colo e lugares quentinhos.",
+    story: "Foi encontrado perdido e nunca localizaram o dono.",
+    photos: ["https://example.com/mingau1.jpg"],
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    id: "6",
+    name: "Spike",
+    status: "Disponivel",
+    breed: "Pitbull",
+    sex: "Macho",
+    typeId: 1,
+    age: "3 anos",
+    vaccines: ["Raiva", "V10"],
+    size: "Medio",
+    description: "Forte e leal, com olhar intimidador mas coração doce.",
+    behavior: "Protetor, obediente e muito apegado ao tutor.",
+    story: "Resgatado de maus-tratos e reabilitado.",
+    photos: ["https://example.com/spike1.jpg"],
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    id: "7",
+    name: "Mel",
+    status: "Adotado",
+    breed: "Golden Retriever",
+    sex: "Femea",
+    typeId: 1,
+    age: "2 anos",
+    vaccines: ["Raiva", "V10"],
+    size: "Grande",
+    description: "Extremamente dócil e amorosa.",
+    behavior: "Brincalhona, perfeita para famílias.",
+    story: "Doada por um criador responsável.",
+    photos: ["https://example.com/mel1.jpg"],
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    id: "8",
+    name: "Nina",
+    status: "Disponivel",
+    breed: "Vira-lata",
+    sex: "Femea",
+    typeId: 2,
+    age: "8 meses",
+    vaccines: ["V4"],
+    size: "Pequeno",
+    description: "Filhote curiosa e cheia de energia.",
+    behavior: "Brincalhona, se adapta fácil.",
+    story: "Encontrada em uma caixa na rua ainda filhote.",
+    photos: ["https://example.com/nina1.jpg"],
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    id: "9",
+    name: "Zeus",
+    status: "Disponivel",
+    breed: "Rottweiler",
+    sex: "Macho",
+    typeId: 1,
+    age: "5 anos",
+    vaccines: ["Raiva", "V10"],
+    size: "Grande",
+    description: "Imponente e muito protetor.",
+    behavior: "Leal, precisa de tutor experiente.",
+    story: "Seu dono faleceu e ele ficou sem lar.",
+    photos: ["https://example.com/zeus1.jpg"],
+    createdAt: new Date(),
+    updatedAt: new Date()
+  }
 ]
 
 export default function AnimalPage() {
   const [filterValue, setFilterValue] = useState("")
+  const { isEditing } = useControlAnimal()
+
+
+  if (isEditing) {
+    return (
+      <main className="p-6">
+        <AnimalForm />
+      </main>
+    )
+  }
 
   return (
     <main>

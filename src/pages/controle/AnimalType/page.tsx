@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input"
 import { DataTable } from "../data-table"
 import { columnsType } from "./columns"
 import { useState } from "react"
+import { useControlAnimalType } from "@/stores/controle/animal-type"
+import AnimalTypeForm from "../form/AnimalTypeForm"
 
 const mockTypes = [
   { id: 1, label: "Cachorro", active: true, createdAt: new Date(), updatedAt: new Date() },
@@ -27,6 +29,17 @@ const mockTypes = [
 
 export default function AnimalTypePage() {
   const [filterValue, setFilterValue] = useState("")
+
+  const { isEditing } = useControlAnimalType()
+
+
+  if (isEditing) {
+    return (
+      <main className="p-6">
+        <AnimalTypeForm />
+      </main>
+    )
+  }
 
   return (
     <main>

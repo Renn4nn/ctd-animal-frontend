@@ -1,6 +1,7 @@
 import { ColumnDef } from "@tanstack/react-table"
 import { Pencil } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
+import { useControlAnimalType } from "@/stores/controle/animal-type"
 
 export type AnimalType = {
   id: number
@@ -38,9 +39,12 @@ export const columnsType: ColumnDef<AnimalType>[] = [
     header: () => <div className="text-right">Ações</div>,
     cell: ({ row }) => {
       const type = row.original
+      const setEditingAnimalType = useControlAnimalType((state) => state.setEditingAnimalType)
       return (
         <div className="flex items-center justify-end gap-2">
-          <button className="flex items-center justify-center w-9 h-9 rounded-md bg-amber-500 text-white hover:bg-amber-600 transition-all">
+          <button
+            onClick={() => setEditingAnimalType(type)}
+            className="flex items-center justify-center w-9 h-9 rounded-md bg-amber-500 text-white hover:bg-amber-600 transition-all">
             <Pencil size={16} />
           </button>
 

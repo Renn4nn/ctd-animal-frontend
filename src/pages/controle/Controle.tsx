@@ -41,7 +41,7 @@ export default function Controle() {
             <NavLink
               key={item.to}
               to={item.to}
-              className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-slate-600 transition-all hover:bg-slate-100"
+              className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-slate-600 transition-all"
               activeClassName="bg-primary/10 text-primary"
             >
               <item.icon className="size-5" />

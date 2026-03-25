@@ -55,7 +55,7 @@ export function DataTable<TData, TValue>({
     <div className="space-y-4 h-full flex flex-col">
       <div className="rounded-xl border bg-white overflow-hidden shadow-sm">
         <Table>
-          <TableHeader className="bg-slate-50/50">
+          <TableHeader className="bg-slate-50/50 hover:bg-slate-100">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
@@ -69,7 +69,7 @@ export function DataTable<TData, TValue>({
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} className="border-b last:border-0 transition-colors hover:bg-slate-50/50">
+                <TableRow key={row.id} className="border-b last:border-0 transition-colors">
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id} className="py-4">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
