@@ -50,9 +50,9 @@ function ActionsCell({ type }: { type: AnimalType }) {
 
       <button
         onClick={toggleActive}
-        className={`flex items-center justify-center w-9 h-9 rounded-md text-white transition-all ${type.active ? "bg-red-500 hover:bg-red-600" : "bg-green-600 hover:bg-green-700"}`}
+        className={`font-semibold flex items-center justify-center w-9 h-9 rounded-md text-white transition-all ${type.active ? "bg-green-500 hover:bg-green-600" : "bg-red-500 hover:bg-red-600"}`}
       >
-        X
+        {type.active ? "ON" : "OFF"}
       </button>
     </div>
   )
@@ -60,11 +60,11 @@ function ActionsCell({ type }: { type: AnimalType }) {
 
 export const columnsType: ColumnDef<AnimalType>[] = [
   {
-    accessorKey: "label", // Mudamos de 'name' para 'label' conforme seu Zod
+    accessorKey: "label",
     header: "Tipo",
   },
   {
-    accessorKey: "active", // Mudamos de 'status' para 'active' (boolean)
+    accessorKey: "active",
     header: "Situação",
     cell: ({ row }) => {
       const active = row.getValue("active") as boolean

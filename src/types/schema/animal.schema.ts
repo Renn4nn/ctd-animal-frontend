@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { createZodDto } from "nestjs-zod";
 
 export const animalSchema = z.object({
   id: z.string().uuid(),
@@ -51,8 +50,3 @@ export const updateAnimalSchema = createAnimalSchema.partial()
 export type Animal = z.infer<typeof animalSchema>;
 export type AnimalCreate = z.infer<typeof createAnimalSchema>;
 export type AnimalUpdate = z.infer<typeof updateAnimalSchema>;
-
-// DTO's
-export class AnimalDTO extends createZodDto(animalSchema) { }
-export class AnimalCreateDTO extends createZodDto(createAnimalSchema) { }
-export class AnimalUpdateDTO extends createZodDto(updateAnimalSchema) { }

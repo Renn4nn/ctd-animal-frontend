@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { createZodDto } from "nestjs-zod";
 
 const isValidCPF = (cpf: string) => {
   cpf = cpf.replace(/\D/g, "");
@@ -48,8 +47,3 @@ export const updateAdptionLogSchema = createAdptionLogSchema.partial()
 export type AdptionLog = z.infer<typeof adptionLogSchema>;
 export type AdptionLogCreate = z.infer<typeof createAdptionLogSchema>;
 export type AdptionLogUpdate = z.infer<typeof updateAdptionLogSchema>;
-
-// DTO's
-export class AdptionLogDTO extends createZodDto(adptionLogSchema) { }
-export class AdptionLogCreateDTO extends createZodDto(createAdptionLogSchema) { }
-export class AdptionLogUpdateDTO extends createZodDto(updateAdptionLogSchema) { }

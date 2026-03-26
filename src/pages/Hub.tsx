@@ -41,8 +41,6 @@ const HubPage = () => {
     setActiveTypeId(animalTypes[0].id);
   }
 
-  const activeType = animalTypes.find(t => t.id === activeTypeId);
-
   const availableAnimals = useMemo(
     () => animals
       .filter((animal) => animal.typeId === activeTypeId && (animal.status === "Disponivel" || animal.status === "Adotado"))
