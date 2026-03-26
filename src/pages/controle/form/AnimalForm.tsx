@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Animal, AnimalUpdate } from "@/types/schema/animal.schema"
+import type { AnimalType } from "@/types/schema/animalType.schema"
 import {
   Select,
   SelectContent,
@@ -10,21 +11,32 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { apiRequest } from "@/lib/api/request"
 import { toast } from "@/components/ui/sonner"
-import { useQueryClient } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 
 export default function AnimalForm() {
   const { editingAnimal, clearEditing } = useControlAnimal()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const queryClient = useQueryClient()
 
+  const { data: typeRes } = useQuery({
+    queryKey: ['animal-types'],
+    queryFn: () => apiRequest<AnimalType[]>({ method: 'get', url: '/animal-type' }),
+  })
+
+  const animalTypes = useMemo(() => {
+    if (!typeRes || !('data' in typeRes)) return []
+    return typeRes.data
+  }, [typeRes])
+
   if (!editingAnimal) return null
   const animal: Animal = editingAnimal
 
   const [formData, setFormData] = useState<AnimalUpdate>(() => ({
     name: animal.name,
+    typeId: animal.typeId,
     breed: animal.breed,
     sex: animal.sex,
     size: animal.size,
@@ -38,6 +50,7 @@ export default function AnimalForm() {
   useEffect(() => {
     setFormData({
       name: animal.name,
+      typeId: animal.typeId,
       breed: animal.breed,
       sex: animal.sex,
       size: animal.size,
@@ -110,6 +123,25 @@ export default function AnimalForm() {
             value={formData.name ?? ""}
             onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
           />
+        </div>
+
+        <div className="space-y-1">
+          <label className="text-sm font-medium text-slate-700">Tipo</label>
+          <Select
+            value={String(formData.typeId)}
+            onValueChange={(value) => setFormData((p) => ({ ...p, typeId: Number(value) }))}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Selecione o tipo" />
+            </SelectTrigger>
+            <SelectContent>
+              {animalTypes.map((t) => (
+                <SelectItem key={t.id} value={String(t.id)}>
+                  {t.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Raça */}

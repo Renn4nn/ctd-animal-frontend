@@ -2,10 +2,28 @@ import { ColumnDef } from "@tanstack/react-table"
 import { Pencil } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Animal } from "@/types/schema/animal.schema"
+import type { AnimalType } from "@/types/schema/animalType.schema"
 import { useControlAnimal } from "@/stores/controle/animal-controll"
 import { apiRequest } from "@/lib/api/request"
 import { toast } from "@/components/ui/sonner"
-import { useQueryClient } from "@tanstack/react-query"
+import { useQueryClient, useQuery } from "@tanstack/react-query"
+import { useMemo } from "react"
+
+function TypeCell({ typeId }: { typeId: number }) {
+  const { data: typeRes } = useQuery({
+    queryKey: ['animal-types'],
+    queryFn: () => apiRequest<AnimalType[]>({ method: 'get', url: '/animal-type' }),
+  })
+
+  const animalTypes = useMemo(() => {
+    if (!typeRes || !('data' in typeRes)) return []
+    return typeRes.data
+  }, [typeRes])
+
+  const typeLabel = animalTypes.find((t) => t.id === typeId)?.label || "-"
+
+  return <span>{typeLabel}</span>
+}
 
 function ActionsCell({ animal }: { animal: Animal }) {
   const setEditingAnimal = useControlAnimal((state) => state.setEditingAnimal)
@@ -61,6 +79,14 @@ export const columnsAnimal: ColumnDef<Animal>[] = [
   {
     accessorKey: "breed",
     header: "Raça",
+  },
+  {
+    accessorKey: "typeId",
+    header: "Tipo",
+    cell: ({ row }) => {
+      const typeId = row.getValue("typeId") as number
+      return <TypeCell typeId={typeId} />
+    },
   },
   {
     accessorKey: "sex",

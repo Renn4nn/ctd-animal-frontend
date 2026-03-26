@@ -15,6 +15,7 @@ interface AnimalCardProps {
 }
 
 const getPhotoUrl = (photo: string): string => {
+  if (!photo) return "../assets/noimage.jpg"
   if (photo.includes("photos/animals")) {
     const uuid = photo.split("/").pop();
     if (uuid) {
