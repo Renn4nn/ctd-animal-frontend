@@ -44,7 +44,13 @@ const HubPage = () => {
   const activeType = animalTypes.find(t => t.id === activeTypeId);
 
   const availableAnimals = useMemo(
-    () => animals.filter((animal) => animal.typeId === activeTypeId && animal.status === "Disponivel"),
+    () => animals
+      .filter((animal) => animal.typeId === activeTypeId && (animal.status === "Disponivel" || animal.status === "Adotado"))
+      .sort((a, b) => {
+        if (a.status === "Adotado" && b.status !== "Adotado") return 1;
+        if (a.status !== "Adotado" && b.status === "Adotado") return -1;
+        return 0;
+      }),
     [activeTypeId, animals]
   );
 
@@ -104,7 +110,7 @@ const HubPage = () => {
                   ) : availableAnimals.length ? (
                     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                       {availableAnimals.map((animal, index) => (
-                        <AnimalCard key={animal.id} animal={animal} index={index} />
+                        <AnimalCard key={animal.id} animal={animal} index={index} isAdopted={animal.status === "Adotado"} />
                       ))}
                     </div>
                   ) : (

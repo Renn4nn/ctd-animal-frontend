@@ -9,6 +9,16 @@ interface AnimalGalleryProps {
   animal: Animal;
 }
 
+const getPhotoUrl = (photo: string): string => {
+  if (photo.includes("photos/animals")) {
+    const uuid = photo.split("/").pop();
+    if (uuid) {
+      return `${import.meta.env.VITE_API_BASE_URL || import.meta.env.API_BASE_URL || "http://localhost:3001"}/uploads/${uuid}`;
+    }
+  }
+  return photo;
+};
+
 export const AnimalGallery = ({ animal }: AnimalGalleryProps) => {
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -21,7 +31,7 @@ export const AnimalGallery = ({ animal }: AnimalGalleryProps) => {
     <Card className="overflow-hidden">
       <div className="relative aspect-[4/4.5] overflow-hidden bg-secondary/40 sm:aspect-[16/12]">
         <img
-          src={animal.photos[activeIndex]}
+          src={getPhotoUrl(animal.photos[activeIndex])}
           alt={`Foto ${activeIndex + 1} de ${animal.name}`}
           className="h-full w-full object-cover"
         />
@@ -58,7 +68,7 @@ export const AnimalGallery = ({ animal }: AnimalGalleryProps) => {
               className="overflow-hidden rounded-2xl border border-border bg-card"
             >
               <img
-                src={photo}
+                src={getPhotoUrl(photo)}
                 alt={`Miniatura ${index + 1} de ${animal.name}`}
                 className={`h-24 w-24 object-cover transition-opacity ${index === activeIndex ? "opacity-100" : "opacity-60"}`}
               />

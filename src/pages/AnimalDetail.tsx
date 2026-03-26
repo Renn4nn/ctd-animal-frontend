@@ -220,10 +220,6 @@ const AnimalDetailPage = () => {
             <ArrowLeft className="size-4" />
             Voltar ao hub
           </Button>
-          <div className="inline-flex items-center gap-2 rounded-full bg-secondary px-4 py-2 text-sm font-semibold text-secondary-foreground">
-            <ShieldCheck className="size-4" />
-            Fluxo assistido no totem
-          </div>
         </div>
 
         <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
@@ -260,8 +256,8 @@ const AnimalDetailPage = () => {
                   <div>
                     <p className="text-sm font-semibold uppercase tracking-[0.18em] text-muted-foreground">Vacinas e cuidados</p>
                     <div className="mt-3 flex flex-wrap gap-2">
-                      {animal.vaccines.map((vaccine) => (
-                        <span key={vaccine} className="rounded-full bg-secondary px-3 py-2 text-sm font-semibold text-secondary-foreground">
+                      {animal.vaccines.map((vaccine, index) => (
+                        <span key={`${vaccine}-${index}`} className="rounded-full bg-secondary px-3 py-2 text-sm font-semibold text-secondary-foreground">
                           {vaccine}
                         </span>
                       ))}
