@@ -1,20 +1,16 @@
-import { LogOut, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { AnimalCard } from "@/components/animal-card";
 import { HubSkeleton } from "@/components/hub-skeleton";
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { apiRequest } from "@/lib/api/request";
 import { Animal } from "@/types/schema/animal.schema";
 import { AnimalType } from "@/types/schema/animalType.schema";
-import { useAuthStore } from "@/stores/auth-store";
+import { Logo } from "@/components/logo";
 
 const HubPage = () => {
-  const navigate = useNavigate();
-  const logout = useAuthStore((state) => state.logout);
   const [activeTypeId, setActiveTypeId] = useState<number | null>(null);
 
   const { data: animalsResponse, isLoading: isLoadingAnimals } = useQuery({
@@ -57,6 +53,30 @@ const HubPage = () => {
   };
 
   const isLoading = isLoadingAnimals || isLoadingTypes;
+  if (!isLoading && animals.length === 0) {
+    return (
+      <main className="min-h-screen px-4 py-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex min-h-[calc(100vh-2rem)] max-w-7xl flex-col gap-6 rounded-[2rem] border border-border/60 bg-card/70 p-4 shadow-soft backdrop-blur-sm sm:p-6 lg:p-8 items-center justify-center">
+          <motion.header
+            initial={{ opacity: 0, y: -16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35 }}
+            className="flex items-center justify-center rounded-2xl px-6 text-primary"
+          >
+            <div className="flex min-h-[300px] flex-col items-center justify-center rounded-[1.5rem] px-6 text-center">
+              <Logo size={300} />
+              <h3 className="mt-4 text-xl font-bold">
+                Nenhum animal disponível no momento
+              </h3>
+              <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
+                Não existem animais cadastrados ou a API não retornou dados.
+              </p>
+            </div>
+          </motion.header>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen px-4 py-4 sm:px-6 lg:px-8">
@@ -67,19 +87,6 @@ const HubPage = () => {
           transition={{ duration: 0.35 }}
           className="flex items-center justify-between rounded-2xl px-6 text-primary"
         >
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-9 gap-2 border-none bg-white/10 text-xs font-semibold hover:bg-red-800 hover:text-white"
-            onClick={() => {
-              logout();
-              navigate("/login", { replace: true });
-            }}
-          >
-            <LogOut className="size-3.5" />
-            Sair
-          </Button>
-
         </motion.header>
 
         <section className="grid gap-4">
@@ -113,10 +120,10 @@ const HubPage = () => {
                     </div>
                   ) : (
                     <div className="flex min-h-[300px] flex-col items-center justify-center rounded-[1.5rem] border border-dashed border-border bg-card/70 px-6 text-center">
-                      <Sparkles className="size-10 text-primary" />
+                      <Logo size={300} />
                       <h3 className="mt-4 text-xl font-bold">Nenhum {type.label.toLowerCase()} disponível</h3>
                       <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
-                        Todos os animais dessa categoria já foram reservados no fluxo simulado.
+                        Crie um novo animal para começar
                       </p>
                     </div>
                   )}
