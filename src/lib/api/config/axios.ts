@@ -26,7 +26,7 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 })
 
 axiosRetry(api, {
-	retries: 5,
+	retries: 3,
 	retryDelay: (retryCount) => {
 		console.log(`Tentativa de conexão nº ${retryCount}...`)
 		return retryCount * 1000

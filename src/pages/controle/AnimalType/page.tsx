@@ -52,6 +52,7 @@ export default function AnimalTypePage() {
         <Button
           className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-6 h-12 shadow-lg shadow-blue-200 transition-all active:scale-95"
           onClick={() => setIsCreating(true)}
+          disabled={!animalTypes}
         >
           <Plus size={20} />
           Novo
@@ -71,8 +72,8 @@ export default function AnimalTypePage() {
       </div>
       {isLoading ? (
         <div className="p-10 text-center">Carregando lista de animais...</div>
-      ) : isError ? (
-        <div className="p-10 text-center text-red-500">Erro ao carregar animais.</div>
+      ) : animalTypes.length === 0 ? (
+        <div className="p-10 text-center text-slate-500">Nenhum tipo de animal encontrado.</div>
       ) : (
         <DataTable columns={columnsType} data={animalTypes} filterValue={filterValue} onFilterChange={setFilterValue} />
       )}
