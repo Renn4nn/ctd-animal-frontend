@@ -14,19 +14,24 @@ const HubPage = () => {
   const [activeTypeId, setActiveTypeId] = useState<number | null>(null);
 
   const { data: animalsResponse, isLoading: isLoadingAnimals } = useQuery({
-    queryKey: ['hub-animals'],
+    queryKey: ['animals'],
     queryFn: () => apiRequest<Animal[]>({
       method: 'get',
       url: '/animal'
-    })
+    }),
+    staleTime: 30000, // 30 segundos
+    refetchOnWindowFocus: true,
+    refetchInterval: 60000, // refetch a cada 60 segundos
   });
 
   const { data: typesResponse, isLoading: isLoadingTypes } = useQuery({
-    queryKey: ['hub-animal-types'],
+    queryKey: ['animal-types'],
     queryFn: () => apiRequest<AnimalType[]>({
       method: 'get',
       url: '/animal-type'
-    })
+    }),
+    staleTime: 30000,
+    refetchOnWindowFocus: true,
   });
 
   const animals = animalsResponse && 'data' in animalsResponse ? animalsResponse.data : [];
