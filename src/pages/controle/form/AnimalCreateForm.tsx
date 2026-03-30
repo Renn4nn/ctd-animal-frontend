@@ -93,7 +93,7 @@ export default function AnimalCreateForm({ onCancel }: { onCancel: () => void })
     fd.append('age', formData.age)
     fd.append('size', formData.size)
     fd.append('sex', formData.sex)
-    fd.append('status', formData.status)
+    fd.append('status', "Disponivel")
 
     fd.append('description', formData.description ?? "")
     fd.append('story', formData.story ?? "")
@@ -212,22 +212,6 @@ export default function AnimalCreateForm({ onCancel }: { onCancel: () => void })
               <SelectItem value="Pequeno">Pequeno</SelectItem>
               <SelectItem value="Medio">Médio</SelectItem>
               <SelectItem value="Grande">Grande</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-1">
-          <label className="text-sm font-medium text-slate-700">Status</label>
-          <Select
-            value={formData.status}
-            onValueChange={(value) => setFormData((p) => ({ ...p, status: value as AnimalCreate['status'] }))}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Disponivel">Disponível</SelectItem>
-              <SelectItem value="Adotado">Adotado</SelectItem>
             </SelectContent>
           </Select>
         </div>

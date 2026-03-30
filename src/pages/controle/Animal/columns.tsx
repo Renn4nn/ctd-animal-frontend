@@ -7,7 +7,18 @@ import { useControlAnimal } from "@/stores/controle/animal-controll"
 import { apiRequest } from "@/lib/api/request"
 import { toast } from "@/components/ui/sonner"
 import { useQueryClient, useQuery } from "@tanstack/react-query"
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 function TypeCell({ typeId }: { typeId: number }) {
   const { data: typeRes } = useQuery({
@@ -28,11 +39,16 @@ function TypeCell({ typeId }: { typeId: number }) {
 function ActionsCell({ animal }: { animal: Animal }) {
   const setEditingAnimal = useControlAnimal((state) => state.setEditingAnimal)
   const queryClient = useQueryClient()
+  const [isAlertOpen, setIsAlertOpen] = useState(false)
 
-  async function deleteAnimal() {
-    const confirmed = window.confirm(`Tem certeza que deseja excluir ${animal.name}?`)
-    if (!confirmed) return
+  function handleDelete() {
+    if (animal.status === "Adotado") {
+      return toast.error("Não é possível excluir um animal que já foi adotado!")
+    }
+    setIsAlertOpen(true)
+  }
 
+  async function confirmDelete() {
     const res = await apiRequest<Animal, never>({
       method: 'delete',
       url: `/animal/${animal.id}`,
@@ -57,16 +73,43 @@ function ActionsCell({ animal }: { animal: Animal }) {
     <div className="flex items-center justify-end gap-2">
       <button
         onClick={() => setEditingAnimal(animal)}
-        className="flex items-center justify-center w-9 h-9 rounded-md bg-amber-500 text-white hover:bg-amber-600 transition-all">
+        className="flex items-center justify-center w-9 h-9 rounded-md bg-amber-500 text-white hover:bg-amber-600 transition-all"
+      >
         <Pencil size={16} />
       </button>
-
       <button
-        onClick={deleteAnimal}
-        className="flex items-center justify-center w-9 h-9 rounded-md bg-red-500 text-white hover:bg-red-600 transition-all"
-      >
+        onClick={handleDelete}
+        className="flex items-center justify-center w-9 h-9 rounded-md bg-red-500 text-white hover:bg-red-600 transition-all">
         X
       </button>
+
+      <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
+        <AlertDialogTrigger asChild>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Você tem certeza absoluta?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação não pode ser desfeita. Isso excluirá permanentemente o
+              animal <strong>{animal.name}</strong>.
+              {animal.status === "Adotado" && (
+                <span className="block mt-2 text-destructive font-semibold">
+                  Atenção: Este animal possui registros de adoção e a exclusão pode falhar.
+                </span>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="bg-red-500 hover:bg-red-600"
+            >
+              Confirmar Exclusão
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

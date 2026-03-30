@@ -108,27 +108,29 @@ const HubPage = () => {
             </div>
 
             <Tabs value={activeTypeId?.toString()} className="mt-6">
-              {animalTypes.map((type) => (
-                <TabsContent key={type.id} value={type.id.toString()}>
-                  {isLoading ? (
-                    <HubSkeleton />
-                  ) : availableAnimals.length ? (
-                    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                      {availableAnimals.map((animal, index) => (
-                        <AnimalCard key={animal.id} animal={animal} index={index} isAdopted={animal.status === "Adotado"} />
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="flex min-h-[300px] flex-col items-center justify-center rounded-[1.5rem] border border-dashed border-border bg-card/70 px-6 text-center">
-                      <Logo size={300} />
-                      <h3 className="mt-4 text-xl font-bold">Nenhum {type.label.toLowerCase()} disponível</h3>
-                      <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
-                        Crie um novo animal para começar
-                      </p>
-                    </div>
-                  )}
-                </TabsContent>
-              ))}
+              {isLoading ? (
+                <HubSkeleton />
+              ) : (
+                animalTypes.map((type) => (
+                  <TabsContent key={type.id} value={type.id.toString()}>
+                    {availableAnimals.length ? (
+                      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                        {availableAnimals.map((animal, index) => (
+                          <AnimalCard key={animal.id} animal={animal} index={index} isAdopted={animal.status === "Adotado"} />
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="flex min-h-[300px] flex-col items-center justify-center rounded-[1.5rem] border border-dashed border-border bg-card/70 px-6 text-center">
+                        <Logo size={300} />
+                        <h3 className="mt-4 text-xl font-bold">Nenhum {type.label.toLowerCase()} disponível</h3>
+                        <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
+                          Crie um novo animal para começar
+                        </p>
+                      </div>
+                    )}
+                  </TabsContent>
+                ))
+              )}
             </Tabs>
           </div>
         </section>

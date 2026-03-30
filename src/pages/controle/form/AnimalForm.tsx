@@ -41,7 +41,7 @@ export default function AnimalForm() {
     sex: animal.sex,
     size: animal.size,
     age: animal.age,
-    status: animal.status,
+    status: "Disponivel",
     description: animal.description,
     story: animal.story,
     behavior: animal.behavior,
@@ -55,7 +55,7 @@ export default function AnimalForm() {
       sex: animal.sex,
       size: animal.size,
       age: animal.age,
-      status: animal.status,
+      status: "Disponivel",
       description: animal.description,
       story: animal.story,
       behavior: animal.behavior,
@@ -197,24 +197,6 @@ export default function AnimalForm() {
             value={formData.age ?? ""}
             onChange={(e) => setFormData((prev) => ({ ...prev, age: e.target.value }))}
           />
-        </div>
-
-        {/* Status */}
-        <div className="space-y-1">
-          <label className="text-sm font-medium text-slate-700">Status</label>
-          <Select
-            value={formData.status}
-            onValueChange={(value) => setFormData((prev) => ({ ...prev, status: value as Animal['status'] }))}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-
-            <SelectContent>
-              <SelectItem value="Disponivel">Disponível</SelectItem>
-              <SelectItem value="Adotado">Adotado</SelectItem>
-            </SelectContent>
-          </Select>
         </div>
 
         {/* Descrição - Full Width */}
