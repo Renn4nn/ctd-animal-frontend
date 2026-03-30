@@ -9,6 +9,7 @@ import { apiRequest } from "@/lib/api/request";
 import { Animal } from "@/types/schema/animal.schema";
 import { AnimalType } from "@/types/schema/animalType.schema";
 import { Logo } from "@/components/logo";
+import { PageTitle } from "@/components/page-title";
 
 const HubPage = () => {
   const [activeTypeId, setActiveTypeId] = useState<number | null>(null);
@@ -85,6 +86,7 @@ const HubPage = () => {
 
   return (
     <main className="min-h-screen px-4 py-4 sm:px-6 lg:px-8">
+      <PageTitle title="Hub" />
       <div className="mx-auto flex min-h-[calc(100vh-2rem)] max-w-7xl flex-col gap-6 rounded-[2rem] border border-border/60 bg-card/70 p-4 shadow-soft backdrop-blur-sm sm:p-6 lg:p-8">
         <motion.header
           initial={{ opacity: 0, y: -16 }}

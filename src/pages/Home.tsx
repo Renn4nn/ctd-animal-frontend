@@ -1,11 +1,13 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { PageTitle } from "@/components/page-title";
 
 export default function Home() {
   const navigate = useNavigate();
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden">
+      <PageTitle title="Home" />
       {/* Background Decorativo */}
       <div className="absolute inset-0 bg-hero-gradient opacity-95" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,hsl(var(--accent)/0.22),transparent_0_36%),radial-gradient(circle_at_80%_10%,hsl(var(--secondary)/0.35),transparent_0_28%)]" />
@@ -19,23 +21,23 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45 }}
         >
-          <motion.div 
+          <motion.div
             className="flex flex-col gap-6 w-full" // gap maior entre os botões
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
             {/* Botões com h-16 (64px) e text-xl para facilitar o toque no totem */}
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="border-2 border-blue-600 text-blue-600 hover:bg-blue-50 h-16 text-xl font-bold rounded-2xl"
               onClick={() => navigate("/hub", { replace: true })}
             >
               Hub
             </Button>
-            
-            <Button 
-              variant="outline" 
+
+            <Button
+              variant="outline"
               className="border-2 border-blue-600 text-blue-600 hover:bg-blue-50 h-16 text-xl font-bold rounded-2xl"
               onClick={() => navigate("/controle", { replace: true })}
             >

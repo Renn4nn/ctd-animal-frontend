@@ -10,6 +10,7 @@ import AnimalForm from "../form/AnimalForm"
 import AnimalCreateForm from "../form/AnimalCreateForm"
 import { apiRequest } from "@/lib/api/request"
 import { useQuery } from "@tanstack/react-query"
+import { PageTitle } from "@/components/page-title"
 
 export default function AnimalPage() {
   const [filterValue, setFilterValue] = useState("")
@@ -44,6 +45,7 @@ export default function AnimalPage() {
 
   return (
     <main>
+      <PageTitle title="Animais" />
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
         <h1 className="text-2xl font-bold">Listagem de Animais</h1>
 

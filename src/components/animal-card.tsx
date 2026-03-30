@@ -15,7 +15,7 @@ interface AnimalCardProps {
 }
 
 const getPhotoUrl = (photo: string): string => {
-  if (!photo) return "../assets/noimage.jpg"
+  if (!photo) return "https://www.freeiconspng.com/uploads/no-image-icon-4.png";
   if (photo.includes("photos/animals")) {
     const uuid = photo.split("/").pop();
     if (uuid) {

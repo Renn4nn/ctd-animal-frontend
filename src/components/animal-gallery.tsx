@@ -10,7 +10,7 @@ interface AnimalGalleryProps {
 }
 
 const getPhotoUrl = (photo: string): string => {
-  if (!photo) return "../assets/noimage.jpg";
+  if (!photo) return "https://www.freeiconspng.com/uploads/no-image-icon-4.png";
   if (photo.includes("photos/animals")) {
     const uuid = photo.split("/").pop();
     if (uuid) {
@@ -83,7 +83,7 @@ export const AnimalGallery = ({ animal }: AnimalGalleryProps) => {
             <p className="font-semibold">Saúde e preparo para adoção</p>
           </div>
           <p className="mt-3 text-sm leading-7 text-secondary-foreground">
-            Todos os dados apresentados aqui são mockados para validar o fluxo do totem durante o evento.
+            Todos os animais passaram por exames veterinários e estão prontos para uma nova vida.
           </p>
         </div>
       </div>

@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 // UI Components
 import { AnimalGallery } from "@/components/animal-gallery";
@@ -47,6 +47,7 @@ const STEP_CONFIG: Record<Step, { label: string; keyboard: "letters" | "numbers"
 
 const AnimalDetailPage = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { id = "" } = useParams();
   const [submitted, setSubmitted] = useState(false);
   const [currentStep, setCurrentStep] = useState<Step>("adopterName");
@@ -67,10 +68,10 @@ const AnimalDetailPage = () => {
   const isLoading = isLoadingAnimal || isLoadingStore;
 
   const summary = useMemo(() => animal ? [
-    { label: "Porte", value: animal.size },
-    { label: "Sexo", value: animal.sex },
-    { label: "Raça", value: animal.breed },
-    { label: "Idade", value: animal.age },
+    { label: "Porte", value: animal.size || "---" },
+    { label: "Sexo", value: animal.sex || "---" },
+    { label: "Raça", value: animal.breed || "---" },
+    { label: "Idade", value: animal.age || "---" },
   ] : [], [animal]);
 
   const form = useForm<AdptionLogCreate>({
@@ -170,6 +171,11 @@ const AnimalDetailPage = () => {
       data: { status: 'Adotado' },
     });
 
+    // Invalida queries para atualizar Hub, Logs e Animal
+    await queryClient.invalidateQueries({ queryKey: ['animals'] });
+    await queryClient.invalidateQueries({ queryKey: ['adption-logs'] });
+    await queryClient.invalidateQueries({ queryKey: ['animal', id] });
+
     setSubmitted(true);
     setFormOpen(false);
     toast.success('Adoção registrada!', { description: `${animal.name} agora tem um novo lar.` });
@@ -228,11 +234,25 @@ const AnimalDetailPage = () => {
                   <InfoSection title="História" content={animal.story} />
                   <InfoSection title="Comportamento" content={animal.behavior} />
                   <div>
-                    <p className="text-sm font-semibold uppercase tracking-[0.18em] text-muted-foreground">Vacinas e cuidados</p>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {animal.vaccines.map((v, i) => (
-                        <span key={i} className="rounded-full bg-secondary px-3 py-2 text-sm font-semibold text-secondary-foreground">{v}</span>
-                      ))}
+                    <p className="text-sm font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                      Vacinas e cuidados
+                    </p>
+
+                    <div className="flex flex-wrap gap-2">
+                      {animal.vaccines && animal.vaccines.length > 0 ? (
+                        animal.vaccines.map((v, i) => (
+                          <span
+                            key={i}
+                            className="rounded-full bg-secondary px-3 py-2 text-sm font-semibold text-secondary-foreground"
+                          >
+                            {v}
+                          </span>
+                        ))
+                      ) : (
+                        <span className="text-sm text-muted-foreground">
+                          Informações de vacinação não disponíveis.
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -366,19 +386,45 @@ const AnimalDetailPage = () => {
 };
 
 // Sub-componentes auxiliares
-const InfoSection = ({ title, content }: { title: string; content: string }) => (
-  <div>
-    <p className="text-sm font-semibold uppercase tracking-[0.18em] text-muted-foreground">{title}</p>
-    <p className="mt-2 text-sm leading-7 text-foreground">{content}</p>
-  </div>
-);
+const getEmptyMessage = (title: string) => {
+  switch (title) {
+    case "História":
+      return "Ainda não temos a história deste animal.";
+    case "Comportamento":
+      return "Ainda estamos conhecendo o comportamento deste animal.";
+    default:
+      return "Informação não disponível.";
+  }
+};
 
-const ReviewItem = ({ label, value }: { label: string; value: string }) => (
-  <div className="grid gap-1">
-    <span className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">{label}</span>
-    <span className="font-medium">{value || "---"}</span>
-  </div>
-);
+const InfoSection = ({ title, content }: { title: string; content: string }) => {
+  const displayContent =
+    content && content.trim() !== "" ? content : getEmptyMessage(title);
+
+  return (
+    <div>
+      <p className="text-sm font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+        {title}
+      </p>
+      <p className="text-sm text-muted-foreground">
+        {displayContent}
+      </p>
+    </div>
+  );
+};
+
+const ReviewItem = ({ label, value }: { label: string; value: string }) => {
+  const displayValue = value && value.trim() !== "" ? value : "---";
+
+  return (
+    <div className="grid gap-1">
+      <span className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+        {label}
+      </span>
+      <span className="font-medium">{displayValue}</span>
+    </div>
+  );
+};
 
 const KeyButton = ({ label, onClick, className = "" }: { label: React.ReactNode; onClick: () => void; className?: string }) => (
   <button type="button" onClick={onClick} className={`flex h-14 w-11 items-center justify-center rounded-lg bg-card text-lg font-semibold shadow-sm transition-all hover:bg-primary hover:text-white active:scale-95 ${className}`}>

@@ -9,6 +9,7 @@ import AnimalTypeForm from "../form/AnimalTypeForm"
 import AnimalTypeCreateForm from "../form/AnimalTypeCreateForm"
 import { useQuery } from "@tanstack/react-query"
 import { apiRequest } from "@/lib/api/request"
+import { PageTitle } from "@/components/page-title"
 
 export default function AnimalTypePage() {
   const [filterValue, setFilterValue] = useState("")
@@ -45,6 +46,7 @@ export default function AnimalTypePage() {
 
   return (
     <main>
+      <PageTitle title="Tipos de Animais" />
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
         <h1 className="text-2xl font-bold">
           Tipos de Animais

@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { demoCredentials, useAuthStore } from "@/stores/auth-store";
 import { Header } from "@/components/Header";
+import { PageTitle } from "@/components/page-title";
 
 const loginSchema = z.object({
   login: z.string().min(1, "Digite o login."),
@@ -32,8 +33,8 @@ const LoginPage = () => {
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      login: demoCredentials.login,
-      password: demoCredentials.password,
+      login: "",
+      password: "",
     },
   });
 
@@ -55,12 +56,13 @@ const LoginPage = () => {
 
   return (
     <main className="relative flex min-h-screen overflow-hidden">
+      <PageTitle title="Login" />
       {/* Background Decorativo */}
       <div className="absolute inset-0 bg-hero-gradient opacity-95" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,hsl(var(--accent)/0.22),transparent_0_36%),radial-gradient(circle_at_80%_10%,hsl(var(--secondary)/0.35),transparent_0_28%)]" />
 
       <section className="relative z-10 grid min-h-screen w-full items-center gap-10 px-6 py-10 lg:grid-cols-[1.1fr_0.9fr] lg:px-10">
-        
+
         <Header />
 
         {/* Painel Direito (Login) */}
@@ -100,13 +102,6 @@ const LoginPage = () => {
                     {errors.root.message}
                   </p>
                 )}
-
-                <div className="rounded-2xl border border-border bg-secondary/60 p-4 text-sm leading-6 text-secondary-foreground">
-                  <strong className="block font-semibold">Acesso de teste</strong>
-                  Login = <span className="font-mono text-red-400">{demoCredentials.login}</span> <br />
-                  Senha = <span className="font-mono text-red-400">{demoCredentials.password}</span>
-                </div>
-
                 <Button className="w-full" size="lg" type="submit" variant="hero" disabled={isSubmitting}>
                   {isSubmitting && <LoaderCircle className="mr-2 size-4 animate-spin" />}
                   Entrar no hub
