@@ -65,6 +65,11 @@ export default function AnimalCreateForm({ onCancel }: { onCancel: () => void })
   }
 
   function addPhotoLink() {
+    const lastLink = photoLinks[photoLinks.length - 1]
+    if (!lastLink?.url.trim()) {
+      toast.error("Preencha o link atual antes de adicionar um novo")
+      return
+    }
     setPhotoLinks((prev) => [...prev, { id: makeId(), url: "" }])
   }
 
@@ -271,6 +276,7 @@ export default function AnimalCreateForm({ onCancel }: { onCancel: () => void })
           <Input
             type="file"
             multiple
+            accept="image/*"
             onChange={(e) => setFiles(Array.from(e.target.files ?? []))}
           />
         </div>
