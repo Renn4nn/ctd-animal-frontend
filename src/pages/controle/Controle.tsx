@@ -14,6 +14,7 @@ const menuItems = [
 
 export default function Controle() {
   const location = useLocation();
+  const navigate = useNavigate();
   const logout = useAuthStore((state) => state.logout);
   const operationLogin = useAuthStore((state) => state.operationLogin);
 
@@ -78,6 +79,7 @@ export default function Controle() {
             <div className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center border border-black/5">
               <User className="size-5 text-slate-500" />
             </div>
+            <Button className="border-2 border-blue-600 bg-white text-blue-600 hover:bg-blue-50 rounded-xl px-6 h-12 transition-all active:scale-95" onClick={() => navigate('/hub')}>Hub</Button>
           </div>
         </header>
 

@@ -137,16 +137,16 @@ export const AnimalCard = ({ animal, index, isAdopted = false }: AnimalCardProps
               <button
                 type="button"
                 onClick={(e) => { e.stopPropagation(); goToPrev(); }}
-                className="absolute left-2 top-1/2 z-10 -translate-y-1/2 rounded-full bg-card/85 p-2 opacity-0 transition-opacity duration-200 hover:bg-card group-hover:opacity-100"
+                className="absolute left-2 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/60 backdrop-blur-sm p-2 opacity-0 transition-all duration-200 hover:bg-black/80 group-hover:opacity-100 shadow-md"
               >
-                <ChevronLeft className="size-5 text-foreground" />
+                <ChevronLeft className="size-5 text-white drop-shadow" />
               </button>
               <button
                 type="button"
                 onClick={(e) => { e.stopPropagation(); goToNext(); }}
-                className="absolute right-2 top-1/2 z-10 -translate-y-1/2 rounded-full bg-card/85 p-2 opacity-0 transition-opacity duration-200 hover:bg-card group-hover:opacity-100"
+                className="absolute right-2 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/60 backdrop-blur-sm p-2 opacity-0 transition-all duration-200 hover:bg-black/80 group-hover:opacity-100 shadow-md"
               >
-                <ChevronRight className="size-5 text-foreground" />
+                <ChevronRight className="size-5 text-white drop-shadow" />
               </button>
               <div className="absolute bottom-14 left-1/2 z-10 -translate-x-1/2 flex gap-1.5">
                 {animal.photos.map((_, idx) => (
