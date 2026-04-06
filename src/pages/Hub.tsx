@@ -10,9 +10,12 @@ import { Animal } from "@/types/schema/animal.schema";
 import { AnimalType } from "@/types/schema/animalType.schema";
 import { Logo } from "@/components/logo";
 import { PageTitle } from "@/components/page-title";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const HubPage = () => {
   const [activeTypeId, setActiveTypeId] = useState<number | null>(null);
+  const navigate = useNavigate();
 
   const { data: animalsResponse, isLoading: isLoadingAnimals } = useQuery({
     queryKey: ['animals'],
@@ -77,6 +80,9 @@ const HubPage = () => {
               <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
                 Não existem animais cadastrados ou a API não retornou dados.
               </p>
+              <Button className="w-full mt-4" onClick={() => navigate(`/controle`)}>
+                Cadastrar animal
+              </Button>
             </div>
           </motion.header>
         </div>
