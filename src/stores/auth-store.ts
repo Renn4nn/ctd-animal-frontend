@@ -51,7 +51,7 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: "login-information",
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(() => sessionStorage),
       partialize: ({ sessionToken, operationLogin }) => ({ sessionToken, operationLogin }),
       onRehydrateStorage: () => (state) => {
         state?.setHydrated(true);
