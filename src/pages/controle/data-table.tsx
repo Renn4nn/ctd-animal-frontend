@@ -6,6 +6,8 @@ import {
   getPaginationRowModel,
   getFilteredRowModel,
   useReactTable,
+  getSortedRowModel, // Adicione este
+  SortingState,      // Adicione este
 } from "@tanstack/react-table"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
@@ -37,17 +39,22 @@ export function DataTable<TData, TValue>({
     pageSize: 5,
   })
 
+  const [sorting, setSorting] = React.useState<SortingState>([])
+
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     onPaginationChange: setPagination,
     onGlobalFilterChange: onFilterChange,
+    onSortingChange: setSorting,
     state: {
       pagination,
       globalFilter: filterValue,
+      sorting,
     },
   })
 

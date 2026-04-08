@@ -1,5 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table"
-import { Pencil } from "lucide-react"
+import { Pencil, ArrowUpDown } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Animal } from "@/types/schema/animal.schema"
 import type { AnimalType } from "@/types/schema/animalType.schema"
@@ -40,13 +40,7 @@ function ActionsCell({ animal }: { animal: Animal }) {
   const setEditingAnimal = useControlAnimal((state) => state.setEditingAnimal)
   const queryClient = useQueryClient()
   const [isAlertOpen, setIsAlertOpen] = useState(false)
-
-  function handleDelete() {
-    if (animal.status === "Adotado") {
-      return toast.error("Não é possível excluir um animal que já foi adotado!")
-    }
-    setIsAlertOpen(true)
-  }
+  const isAdopted = animal.status === "Adotado"
 
   async function confirmDelete() {
     const res = await apiRequest<Animal, never>({
@@ -72,15 +66,20 @@ function ActionsCell({ animal }: { animal: Animal }) {
   return (
     <div className="flex items-center justify-end gap-2">
       <button
+        disabled={isAdopted}
         onClick={() => setEditingAnimal(animal)}
-        className="flex items-center justify-center w-9 h-9 rounded-md bg-amber-500 text-white hover:bg-amber-600 transition-all"
+        title={isAdopted ? "Animais adotados não podem ser editados" : "Editar animal"}
+        className="flex items-center justify-center w-9 h-9 rounded-md bg-amber-500 text-white transition-all hover:bg-amber-600 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-amber-500"
       >
         <Pencil size={16} />
       </button>
       <button
-        onClick={handleDelete}
-        className="flex items-center justify-center w-9 h-9 rounded-md bg-red-500 text-white hover:bg-red-600 transition-all">
-        X
+        disabled={isAdopted}
+        onClick={() => setIsAlertOpen(true)}
+        title={isAdopted ? "Animais adotados não podem ser excluídos" : "Excluir animal"}
+        className="flex items-center justify-center w-9 h-9 rounded-md bg-red-500 text-white transition-all hover:bg-red-600 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-red-600"
+      >
+        <span className="font-bold">X</span>
       </button>
 
       <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
@@ -92,11 +91,6 @@ function ActionsCell({ animal }: { animal: Animal }) {
             <AlertDialogDescription>
               Esta ação não pode ser desfeita. Isso excluirá permanentemente o
               animal <strong>{animal.name}</strong>.
-              {animal.status === "Adotado" && (
-                <span className="block mt-2 text-destructive font-semibold">
-                  Atenção: Este animal possui registros de adoção e a exclusão pode falhar.
-                </span>
-              )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -110,7 +104,7 @@ function ActionsCell({ animal }: { animal: Animal }) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </div >
   )
 }
 
@@ -137,7 +131,17 @@ export const columnsAnimal: ColumnDef<Animal>[] = [
   },
   {
     accessorKey: "status",
-    header: "Status",
+    header: ({ column }) => {
+      return (
+        <button
+          className="flex items-center gap-1 hover:text-black transition-colors"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Status
+          <ArrowUpDown size={14} />
+        </button>
+      )
+    },
     cell: ({ row }) => {
       const status = row.getValue("status") as string
       return (
