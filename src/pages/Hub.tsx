@@ -13,6 +13,9 @@ import { PageTitle } from "@/components/page-title";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
+import cmtuLogo from "@/assets/cmtuLogo/cmtuLogo.png";
+import prefeituraLogo from "@/assets/prefeituraLogo/prefeituraLogo.jpeg";
+
 const HubPage = () => {
   const [activeTypeId, setActiveTypeId] = useState<number | null>(null);
   const navigate = useNavigate();
@@ -66,26 +69,41 @@ const HubPage = () => {
   if (!isLoading && animalTypes.length === 0) {
     return (
       <main className="min-h-screen px-4 py-4 sm:px-6 lg:px-8">
-        <div className="mx-auto flex min-h-[calc(100vh-2rem)] max-w-7xl flex-col gap-6 rounded-[2rem] border border-border/60 bg-card/70 p-4 shadow-soft backdrop-blur-sm sm:p-6 lg:p-8 items-center justify-center">
-          <motion.header
-            initial={{ opacity: 0, y: -16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35 }}
-            className="flex items-center justify-center rounded-2xl px-6 text-primary"
+        <div className="mx-auto flex min-h-[calc(100vh-2rem)] max-w-7xl flex-col gap-6 rounded-[2rem] border border-border/60 bg-card/70 overflow-hidden p-4 shadow-soft backdrop-blur-sm sm:p-6 lg:p-8 items-center justify-center">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4, ease: "out" }}
+            className="relative flex min-h-[350px] w-full max-w-2xl flex-col items-center justify-center overflow px-6 text-center"
           >
-            <div className="flex min-h-[300px] flex-col items-center justify-center rounded-[1.5rem] px-6 text-center">
-              <Logo size={300} />
-              <h3 className="mt-4 text-xl font-bold">
-                Nenhum tipo de animal configurado
-              </h3>
-              <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
-                Não existem categorias (tipos) de animais cadastradas ou ativas no sistema.
-              </p>
-              <Button className="w-full mt-4" onClick={() => navigate(`/controle/animal-type`)}>
-                Cadastrar tipo de animal
-              </Button>
+            <div className="absolute -top-12 -left-12 h-32 w-32 rounded-full bg-primary/5 blur-3xl" />
+            <div className="absolute -bottom-12 -right-12 h-32 w-32 rounded-full bg-primary/10 blur-3xl" />
+
+            <div className="relative mb-8 flex flex-wrap items-center justify-center gap-6 sm:gap-10">
+              <img src={cmtuLogo} alt="CMTU Londrina" className="h-[70px] w-auto object-contain drop-shadow-sm" />
+              <Logo size={200} className="mr-3" />
+              <img src={prefeituraLogo} alt="Prefeitura de Londrina" className="h-[70px] w-auto object-contain drop-shadow-sm" />
             </div>
-          </motion.header>
+
+            <div className="relative z-10 max-w-sm">
+              <h3 className="text-2xl font-extrabold tracking-tight text-foreground">
+                Nenhum tipo configurado
+              </h3>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground/80">
+                Não existem categorias (tipos) de animais cadastradas ou ativas no sistema para exibição.
+              </p>
+            </div>
+
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="mt-8 relative z-10">
+              <Button 
+                variant="outline" 
+                className="rounded-full border-primary/30 bg-primary/5 hover:bg-primary hover:text-white transition-all duration-300"
+                onClick={() => navigate(`/controle/animal-type`)}
+              >
+                Cadastrar tipo
+              </Button>
+            </motion.div>
+          </motion.div>
         </div>
       </main>
     );
@@ -95,25 +113,40 @@ const HubPage = () => {
     return (
       <main className="min-h-screen px-4 py-4 sm:px-6 lg:px-8">
         <div className="mx-auto flex min-h-[calc(100vh-2rem)] max-w-7xl flex-col gap-6 rounded-[2rem] border border-border/60 bg-card/70 p-4 shadow-soft backdrop-blur-sm sm:p-6 lg:p-8 items-center justify-center">
-          <motion.header
-            initial={{ opacity: 0, y: -16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35 }}
-            className="flex items-center justify-center rounded-2xl px-6 text-primary"
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4, ease: "out" }}
+            className="relative flex min-h-[350px] w-full max-w-2xl flex-col items-center justify-center overflow-hidden rounded-[2rem] bg-gradient-to-b from-card/40 to-card/80 px-6 text-center shadow-inner"
           >
-            <div className="flex min-h-[300px] flex-col items-center justify-center rounded-[1.5rem] px-6 text-center">
-              <Logo size={300} />
-              <h3 className="mt-4 text-xl font-bold">
-                Nenhum animal disponível no momento
-              </h3>
-              <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
-                Não existem animais cadastrados ou disponíveis na plataforma.
-              </p>
-              <Button className="w-full mt-4" onClick={() => navigate(`/controle`)}>
-                Cadastrar animal
-              </Button>
+            <div className="absolute -top-12 -left-12 h-32 w-32 rounded-full bg-primary/5 blur-3xl" />
+            <div className="absolute -bottom-12 -right-12 h-32 w-32 rounded-full bg-primary/10 blur-3xl" />
+
+            <div className="relative mb-8 flex flex-wrap items-center justify-center gap-6 sm:gap-10">
+              <img src={cmtuLogo} alt="CMTU Londrina" className="h-[70px] w-auto object-contain drop-shadow-sm" />
+              <Logo size={200} className="mr-3" />
+              <img src={prefeituraLogo} alt="Prefeitura de Londrina" className="h-[70px] w-auto object-contain drop-shadow-sm" />
             </div>
-          </motion.header>
+
+            <div className="relative z-10 max-w-sm">
+              <h3 className="text-2xl font-extrabold tracking-tight text-foreground">
+                Nenhum animal por aqui
+              </h3>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground/80">
+                Não existem animais cadastrados e disponíveis na plataforma no momento.
+              </p>
+            </div>
+
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="mt-8 relative z-10">
+              <Button 
+                variant="outline" 
+                className="rounded-full border-primary/30 bg-primary/5 hover:bg-primary hover:text-white transition-all duration-300"
+                onClick={() => navigate(`/controle/animal`)}
+              >
+                Cadastrar amiguinho
+              </Button>
+            </motion.div>
+          </motion.div>
         </div>
       </main>
     );
@@ -132,6 +165,16 @@ const HubPage = () => {
         </motion.header>
 
         <section className="grid gap-4">
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="flex items-center justify-center gap-4 rounded-[2.5rem] border border-border/50 bg-gradient-to-b from-card/20 to-card/60 p-4 shadow-sm backdrop-blur-md sm:gap-12 sm:px-10 my-2"
+          >
+            <img src={cmtuLogo} alt="CMTU Londrina" className="h-[55px] w-auto object-contain drop-shadow-md transition-transform duration-300 hover:scale-105" />
+            <Logo size={170} className="mr-3 transition-transform duration-300 hover:scale-105" />
+            <img src={prefeituraLogo} alt="Prefeitura de Londrina" className="h-[55px] w-auto object-contain drop-shadow-md transition-transform duration-300 hover:scale-105" />
+          </motion.div>
           <div className="rounded-[1.75rem] border border-border/70 bg-panel-glow p-5 shadow-soft">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
               <div>
@@ -162,13 +205,34 @@ const HubPage = () => {
                         ))}
                       </div>
                     ) : (
-                      <div className="flex min-h-[300px] flex-col items-center justify-center rounded-[1.5rem] border border-dashed border-border bg-card/70 px-6 text-center">
-                        <Logo size={300} />
-                        <h3 className="mt-4 text-xl font-bold">Nenhum {type.label.toLowerCase()} disponível</h3>
-                        <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
-                          Crie um novo animal para começar
-                        </p>
-                      </div>
+                      <motion.div 
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.4, ease: "out" }}
+                        className="relative flex min-h-[350px] w-full flex-col items-center justify-center overflow-hidden rounded-[2rem] bg-gradient-to-b from-card/40 to-card/80 px-6 text-center shadow-inner mt-4"
+                      >
+                        <div className="absolute -top-12 -left-12 h-32 w-32 rounded-full bg-primary/5 blur-3xl" />
+                        <div className="absolute -bottom-12 -right-12 h-32 w-32 rounded-full bg-primary/10 blur-3xl" />
+
+                        <div className="relative z-10 max-w-sm">
+                          <h3 className="text-2xl font-extrabold tracking-tight text-foreground">
+                            Nenhum {type.label.toLowerCase()} por aqui
+                          </h3>
+                          <p className="mt-3 text-sm leading-relaxed text-muted-foreground/80">
+                            Parece que nossa lista de <span className="font-semibold text-primary">{type.label.toLowerCase()}s</span> está vazia no momento. Que tal começar cadastrando um novo amiguinho?
+                          </p>
+                        </div>
+
+                        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="mt-8 relative z-10">
+                          <Button 
+                            variant="outline" 
+                            className="rounded-full border-primary/30 bg-primary/5 hover:bg-primary hover:text-white transition-all duration-300"
+                            onClick={() => navigate(`/controle/animal`)}
+                          >
+                            Cadastrar agora
+                          </Button>
+                        </motion.div>
+                      </motion.div>
                     )}
                   </TabsContent>
                 ))
