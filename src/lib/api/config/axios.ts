@@ -11,6 +11,20 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 	if (!config.headers) {
 		config.headers = new AxiosHeaders()
 	}
+
+	// Adiciona token JWT se existir no sessionStorage
+	const authData = sessionStorage.getItem('login-information')
+	if (authData) {
+		try {
+			const parsed = JSON.parse(authData)
+			if (parsed.state?.sessionToken) {
+				config.headers.set('Authorization', `Bearer ${parsed.state.sessionToken}`)
+			}
+		} catch {
+			console.error('Erro ao parsear dados de autenticação')
+		}
+	}
+
 	const data = config.data
 
 	if (typeof FormData !== 'undefined' && data instanceof FormData) {

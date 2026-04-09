@@ -45,7 +45,10 @@ export default function AnimalForm() {
     description: animal.description,
     story: animal.story,
     behavior: animal.behavior,
+    vaccines: animal.vaccines ?? [],
   }))
+
+  const [vaccinesText, setVaccinesText] = useState(() => (animal.vaccines ?? []).join(', '))
 
   useEffect(() => {
     setFormData({
@@ -59,8 +62,12 @@ export default function AnimalForm() {
       description: animal.description,
       story: animal.story,
       behavior: animal.behavior,
+      vaccines: animal.vaccines ?? [],
     })
+    setVaccinesText((animal.vaccines ?? []).join(', '))
   }, [animal.id])
+
+  const fieldClassName = "bg-white placeholder:text-gray"
 
   const formatDate = (date?: string | Date) => {
     if (!date) return ""
@@ -81,8 +88,11 @@ export default function AnimalForm() {
     if (isSubmitting) return
     setIsSubmitting(true)
 
+    const vaccines = vaccinesText.split(',').map((v) => v.trim()).filter(Boolean)
+
     const payload: AnimalUpdate = {
       ...formData,
+      vaccines,
       description: formData.description?.trim() ? formData.description : null,
       story: formData.story?.trim() ? formData.story : null,
       behavior: formData.behavior?.trim() ? formData.behavior : null,
@@ -118,20 +128,23 @@ export default function AnimalForm() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Nome */}
         <div className="space-y-1">
-          <label className="text-sm font-medium text-slate-700">Nome</label>
+          <label className="text-sm font-medium text-slate-700">Nome <span className="text-red-500">*</span></label>
           <Input
+            className={fieldClassName}
             value={formData.name ?? ""}
+            placeholder="Ex: Rex"
             onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
           />
         </div>
 
+        {/* Tipo */}
         <div className="space-y-1">
-          <label className="text-sm font-medium text-slate-700">Tipo</label>
+          <label className="text-sm font-medium text-slate-700">Tipo <span className="text-red-500">*</span></label>
           <Select
             value={String(formData.typeId)}
             onValueChange={(value) => setFormData((p) => ({ ...p, typeId: Number(value) }))}
           >
-            <SelectTrigger>
+            <SelectTrigger className={fieldClassName}>
               <SelectValue placeholder="Selecione o tipo" />
             </SelectTrigger>
             <SelectContent>
@@ -146,9 +159,11 @@ export default function AnimalForm() {
 
         {/* Raça */}
         <div className="space-y-1">
-          <label className="text-sm font-medium text-slate-700">Raça</label>
+          <label className="text-sm font-medium text-slate-700">Raça <span className="text-red-500">*</span></label>
           <Input
+            className={fieldClassName}
             value={formData.breed ?? ""}
+            placeholder="Ex: Golden Retriever"
             onChange={(e) => setFormData((prev) => ({ ...prev, breed: e.target.value }))}
           />
         </div>
@@ -160,7 +175,7 @@ export default function AnimalForm() {
             value={formData.sex}
             onValueChange={(value) => setFormData((prev) => ({ ...prev, sex: value as Animal['sex'] }))}
           >
-            <SelectTrigger>
+            <SelectTrigger className={fieldClassName}>
               <SelectValue placeholder="Selecione o sexo" />
             </SelectTrigger>
 
@@ -178,7 +193,7 @@ export default function AnimalForm() {
             value={formData.size}
             onValueChange={(value) => setFormData((prev) => ({ ...prev, size: value as Animal['size'] }))}
           >
-            <SelectTrigger>
+            <SelectTrigger className={fieldClassName}>
               <SelectValue placeholder="Selecione o porte" />
             </SelectTrigger>
 
@@ -192,10 +207,23 @@ export default function AnimalForm() {
 
         {/* Idade */}
         <div className="space-y-1">
-          <label className="text-sm font-medium text-slate-700">Idade</label>
+          <label className="text-sm font-medium text-slate-700">Idade <span className="text-red-500">*</span></label>
           <Input
+            className={fieldClassName}
             value={formData.age ?? ""}
+            placeholder="Ex: 2 anos"
             onChange={(e) => setFormData((prev) => ({ ...prev, age: e.target.value }))}
+          />
+        </div>
+
+        {/* Vacinas */}
+        <div className="space-y-1">
+          <label className="text-sm font-medium text-slate-700">Vacinas (separe por vírgula)</label>
+          <Input
+            className={fieldClassName}
+            value={vaccinesText}
+            placeholder="Ex: V8, Antirrábica"
+            onChange={(e) => setVaccinesText(e.target.value)}
           />
         </div>
 
@@ -203,7 +231,9 @@ export default function AnimalForm() {
         <div className="space-y-1 md:col-span-2">
           <label className="text-sm font-medium text-slate-700">Descrição</label>
           <Textarea
+            className={fieldClassName}
             value={formData.description ?? ""}
+            placeholder="Descreva o animal..."
             onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
           />
         </div>
@@ -212,7 +242,9 @@ export default function AnimalForm() {
         <div className="space-y-1 md:col-span-2">
           <label className="text-sm font-medium text-slate-700">História</label>
           <Textarea
+            className={fieldClassName}
             value={formData.story ?? ""}
+            placeholder="Conte a história do animal..."
             onChange={(e) => setFormData((prev) => ({ ...prev, story: e.target.value }))}
           />
         </div>
@@ -221,7 +253,9 @@ export default function AnimalForm() {
         <div className="space-y-1 md:col-span-2">
           <label className="text-sm font-medium text-slate-700">Comportamento</label>
           <Input
+            className={fieldClassName}
             value={formData.behavior ?? ""}
+            placeholder="Ex: Dócil, sociável com crianças"
             onChange={(e) => setFormData((prev) => ({ ...prev, behavior: e.target.value }))}
           />
         </div>
@@ -232,17 +266,15 @@ export default function AnimalForm() {
         </div>
       </div>
 
-      <div className="flex gap-3 mt-8 pt-4 border-t">
+      <div className="flex gap-3 pt-4 border-t mt-6">
         <Button
-          className="bg-blue-600 hover:bg-blue-700 min-w-[140px]"
+          className="bg-blue-600 hover:bg-blue-700"
           onClick={updateAnimal}
           disabled={isSubmitting}
         >
           {isSubmitting ? "Salvando..." : "Salvar Alterações"}
         </Button>
-        <Button variant="outline" onClick={clearEditing}>
-          Cancelar
-        </Button>
+        <Button variant="outline" onClick={clearEditing}>Cancelar</Button>
       </div>
     </div>
   )

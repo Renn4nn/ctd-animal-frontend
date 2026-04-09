@@ -1,24 +1,14 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
-import { wait } from "@/lib/mockApi";
-
-const DEMO_LOGIN = "ctd.admin";
-const DEMO_PASSWORD = "securetepassword123!";
-
 interface AuthState {
   sessionToken: string | null;
   operationLogin: string | null;
   hydrated: boolean;
   setHydrated: (value: boolean) => void;
-  login: (login: string, password: string) => Promise<void>;
+  login: (login: string, token: string) => void;
   logout: () => void;
 }
-
-export const demoCredentials = {
-  login: DEMO_LOGIN,
-  password: DEMO_PASSWORD,
-};
 
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -27,18 +17,10 @@ export const useAuthStore = create<AuthState>()(
       operationLogin: null,
       hydrated: false,
       setHydrated: (value) => set({ hydrated: value }),
-      login: async (login, password) => {
-        await wait(450);
-
-        const normalizedlogin = login.trim().toLowerCase();
-
-        if (normalizedlogin !== DEMO_LOGIN || password !== DEMO_PASSWORD) {
-          throw new Error("Credenciais inválidas. Use o acesso de demonstração informado na tela.");
-        }
-
+      login: (login, token) => {
         set({
-          sessionToken: `petmatch-${Date.now()}`,
-          operationLogin: normalizedlogin,
+          sessionToken: token,
+          operationLogin: login.trim().toLowerCase(),
           hydrated: true,
         });
       },

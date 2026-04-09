@@ -19,7 +19,7 @@ const getPhotoUrl = (photo: string): string => {
   if (photo.includes("photos/animals")) {
     const uuid = photo.split("/").pop();
     if (uuid) {
-      return `${import.meta.env.VITE_API_BASE_URL || import.meta.env.API_BASE_URL || "http://localhost:3001"}/uploads/${uuid}`;
+      return `${import.meta.env.VITE_API_BASE_URL || import.meta.env.API_BASE_URL || "http://localhost:3002"}/uploads/${uuid}`;
     }
   }
   return photo;
@@ -38,6 +38,7 @@ export const AnimalCard = ({ animal, index, isAdopted = false }: AnimalCardProps
   const [translateX, setTranslateX] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const swipeThreshold = 50;
+  const [coverMap, setCoverMap] = useState<Record<number, boolean>>({});
 
   const goToNext = useCallback(() => {
     setDirection(1);
@@ -116,7 +117,7 @@ export const AnimalCard = ({ animal, index, isAdopted = false }: AnimalCardProps
       <Card className="group overflow-hidden">
         <div
           ref={containerRef}
-          className="relative aspect-[4/5] overflow-hidden cursor-grab active:cursor-grabbing"
+          className="relative aspect-[4/5] overflow-hidden cursor-grab active:cursor-grabbing bg-black/10 dark:bg-black/40"
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
@@ -125,12 +126,29 @@ export const AnimalCard = ({ animal, index, isAdopted = false }: AnimalCardProps
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
         >
+          <div className="absolute inset-0 pointer-events-none">
+            <img
+              src={getPhotoUrl(animal.photos[activePhotoIndex])}
+              className="h-full w-full object-cover blur-xl scale-125 opacity-50 dark:opacity-30"
+              alt=""
+            />
+          </div>
           <img
             key={activePhotoIndex}
             src={getPhotoUrl(animal.photos[activePhotoIndex])}
             alt={`Foto ${activePhotoIndex + 1} de ${animal.name}`}
-            className={`absolute inset-0 h-full w-full object-cover ${isAdopted ? "grayscale" : ""}`}
+            className={`absolute inset-0 h-full w-full transition-all duration-300 ${isAdopted ? "grayscale" : ""} ${coverMap[activePhotoIndex] ? "object-cover" : "object-contain"}`}
             loading="lazy"
+            onLoad={(e) => {
+              const img = e.currentTarget;
+              const parent = img.parentElement;
+              if (!parent || !img.naturalWidth || !img.naturalHeight) return;
+              const widthScale = parent.offsetWidth / img.naturalWidth;
+              const heightScale = parent.offsetHeight / img.naturalHeight;
+              const maxScale = Math.max(widthScale, heightScale);
+              const minScale = Math.min(widthScale, heightScale);
+              setCoverMap((prev) => ({ ...prev, [activePhotoIndex]: minScale / maxScale >= 0.70 }));
+            }}
           />
           {hasMultiplePhotos && !isAdopted && (
             <>

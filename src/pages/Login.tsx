@@ -8,16 +8,18 @@ import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { demoCredentials, useAuthStore } from "@/stores/auth-store";
+import { useAuthStore } from "@/stores/auth-store";
 import { Header } from "@/components/Header";
 import { PageTitle } from "@/components/page-title";
+import { apiRequest } from "@/lib/api/request";
+import { toast } from "sonner";
 
 const loginSchema = z.object({
   login: z.string().min(1, "Digite o login."),
   password: z.string().min(1, "Digite a senha."),
 });
 
-type LoginFormValues = z.infer<typeof loginSchema>;
+type LoginFormValues = z.infer<typeof loginSchema> & { token?: string };
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -44,14 +46,27 @@ const LoginPage = () => {
   }
 
   const onSubmit = async (values: LoginFormValues) => {
-    try {
-      await login(values.login, values.password);
-      navigate("/home", { replace: true });
-    } catch (error) {
-      setError("root", {
-        message: error instanceof Error ? error.message : "Não foi possível autenticar.",
-      });
+    const response = await apiRequest<{
+      user: { id: string; login: string };
+      access_token: string;
+    }>({
+      method: 'post',
+      url: '/user/login',
+      data: values as unknown as never
+    })
+
+    if ('error' in response || 'errors' in response) {
+      toast.error('Erro ao fazer login! Verifique suas credenciais.');
+      return;
     }
+
+    if (!response.data.access_token) {
+      toast.error('Erro ao fazer login!');
+      return;
+    }
+
+    login(values.login, response.data.access_token);
+    navigate("/home", { replace: true });
   };
 
   return (

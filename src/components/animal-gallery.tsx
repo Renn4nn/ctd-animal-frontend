@@ -14,7 +14,7 @@ const getPhotoUrl = (photo: string): string => {
   if (photo.includes("photos/animals")) {
     const uuid = photo.split("/").pop();
     if (uuid) {
-      return `${import.meta.env.VITE_API_BASE_URL || import.meta.env.API_BASE_URL || "http://localhost:3001"}/uploads/${uuid}`;
+      return `${import.meta.env.VITE_API_BASE_URL || import.meta.env.API_BASE_URL || "http://localhost:3002"}/uploads/${uuid}`;
     }
   }
   return photo;
@@ -22,6 +22,7 @@ const getPhotoUrl = (photo: string): string => {
 
 export const AnimalGallery = ({ animal }: AnimalGalleryProps) => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [coverMap, setCoverMap] = useState<Record<number, boolean>>({});
 
   const goTo = (index: number) => {
     const total = animal.photos.length;
@@ -30,11 +31,29 @@ export const AnimalGallery = ({ animal }: AnimalGalleryProps) => {
 
   return (
     <Card className="overflow-hidden">
-      <div className="relative aspect-[4/4.5] overflow-hidden bg-secondary/40 sm:aspect-[16/12]">
+      <div className="relative aspect-[4/4.5] overflow-hidden bg-black/10 dark:bg-black/40 sm:aspect-[16/12]">
+        <div className="absolute inset-0 pointer-events-none">
+          <img
+            src={getPhotoUrl(animal.photos[activeIndex])}
+            className="h-full w-full object-cover blur-xl scale-125 opacity-50 dark:opacity-30"
+            alt=""
+          />
+        </div>
         <img
+          key={activeIndex}
           src={getPhotoUrl(animal.photos[activeIndex])}
           alt={`Foto ${activeIndex + 1} de ${animal.name}`}
-          className="h-full w-full object-cover"
+          className={`absolute inset-0 h-full w-full transition-all duration-300 drop-shadow-xl ${coverMap[activeIndex] ? "object-cover" : "object-contain"}`}
+          onLoad={(e) => {
+            const img = e.currentTarget;
+            const parent = img.parentElement;
+            if (!parent || !img.naturalWidth || !img.naturalHeight) return;
+            const widthScale = parent.offsetWidth / img.naturalWidth;
+            const heightScale = parent.offsetHeight / img.naturalHeight;
+            const maxScale = Math.max(widthScale, heightScale);
+            const minScale = Math.min(widthScale, heightScale);
+            setCoverMap((prev) => ({ ...prev, [activeIndex]: minScale / maxScale >= 0.70 }));
+          }}
         />
 
         {animal.photos.length > 1 ? (
