@@ -1,5 +1,6 @@
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { UploadCloud } from "lucide-react"
 import { Textarea } from "@/components/ui/textarea"
 import {
   Select,
@@ -9,6 +10,30 @@ import {
   SelectValue
 } from "@/components/ui/select"
 import { useEffect, useMemo, useState } from "react"
+
+function FilePreview({ file, onRemove }: { file: File, onRemove: () => void }) {
+  const [preview, setPreview] = useState("");
+  useEffect(() => {
+    const url = URL.createObjectURL(file);
+    setPreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [file]);
+
+  return (
+    <div className="relative h-24 w-24 rounded-md overflow-hidden border border-border group">
+      {preview && <img src={preview} alt="Preview" className="h-full w-full object-cover" />}
+      <button
+        type="button"
+        onClick={onRemove}
+        className="absolute top-1 right-1 bg-red-500/80 text-white rounded-full p-1.5 leading-none shadow hover:bg-red-600 backdrop-blur-sm transition-opacity"
+        title="Remover"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+  );
+}
+
 import { apiRequest } from "@/lib/api/request"
 import { toast } from "@/components/ui/sonner"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
@@ -88,24 +113,28 @@ export default function AnimalCreateForm({ onCancel }: { onCancel: () => void })
     const selectedFiles = Array.from(e.target.files ?? []);
     const acceptedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
 
-    // Verifica se existe algum arquivo inválido
     const hasInvalidFile = selectedFiles.some(file => !acceptedTypes.includes(file.type));
 
     if (hasInvalidFile) {
-      toast.error("Seleção cancelada: Apenas imagens (PNG, JPEG, JPG, WEBP) são permitidas.");
-      setFiles([]); // Limpa o estado
-      e.target.value = ""; // Limpa o input no navegador
-      return;
-    }
-
-    if (selectedFiles.length > 20) {
-      toast.error("Você só pode selecionar até 20 imagens.");
-      setFiles([]);
+      toast.error("Apenas imagens (PNG, JPEG, JPG, WEBP) são permitidas.");
       e.target.value = "";
       return;
     }
 
-    setFiles(selectedFiles);
+    setFiles(prev => {
+      const newFiles = [...prev, ...selectedFiles];
+      if (newFiles.length > 20) {
+        toast.error("Você só pode selecionar até 20 imagens no total.");
+        return prev;
+      }
+      return newFiles;
+    });
+    
+    e.target.value = "";
+  };
+
+  const removeFile = (index: number) => {
+    setFiles(prev => prev.filter((_, i) => i !== index));
   };
 
   async function createAnimal() {
@@ -300,18 +329,42 @@ export default function AnimalCreateForm({ onCancel }: { onCancel: () => void })
           </div>
         </div>
 
-        <div className="space-y-2 md:col-span-2">
-          <label className="text-sm font-medium text-slate-700">
-            Fotos (Até 20 fotos)
-          </label>
-          <Input
-            className={fieldClassName}
-            id="photo-input"
-            type="file"
-            multiple
-            accept="image/png, image/jpeg, image/jpg, image/webp"
-            onChange={handleFileChange}
-          />
+        <div className="space-y-4 md:col-span-2">
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-slate-700">
+              Fotos Locais (Até 20 fotos)
+            </label>
+            <label 
+              htmlFor="photo-input"
+              className="relative flex flex-col items-center justify-center p-6 border-2 border-dashed border-slate-300 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer group text-center"
+            >
+              <input
+                id="photo-input"
+                type="file"
+                multiple
+                accept="image/png, image/jpeg, image/jpg, image/webp"
+                onChange={handleFileChange}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              />
+              <div className="p-3 bg-blue-100 text-blue-600 rounded-full group-hover:scale-110 transition-transform mb-3 shadow-sm">
+                <UploadCloud className="size-6" />
+              </div>
+              <p className="text-sm font-semibold text-slate-700">
+                Clique ou arraste suas imagens aqui
+              </p>
+              <p className="text-xs text-slate-500 mt-1">
+                Suporta PNG, JPEG, WEBP (Máx. 20 Arquivos)
+              </p>
+            </label>
+          </div>
+
+          {files.length > 0 && (
+            <div className="flex flex-wrap gap-3 p-3 bg-slate-50 border border-border rounded-lg">
+              {files.map((file, idx) => (
+                <FilePreview key={`${file.name}-${idx}`} file={file} onRemove={() => removeFile(idx)} />
+              ))}
+            </div>
+          )}
         </div>
       </div>
 

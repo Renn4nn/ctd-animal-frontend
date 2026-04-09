@@ -17,7 +17,13 @@ import AnimalPage from "./pages/controle/Animal/page.tsx";
 import AnimalTypePage from "./pages/controle/AnimalType/page.tsx";
 import Logs from "./pages/controle/Logs/page.tsx";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchInterval: 30000,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>

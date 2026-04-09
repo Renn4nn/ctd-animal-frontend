@@ -52,7 +52,7 @@ export const AnimalCard = ({ animal, index, isAdopted = false }: AnimalCardProps
 
   // Mouse events
   const handleMouseDown = (e: React.MouseEvent) => {
-    if (!hasMultiplePhotos || isAdopted) return;
+    if (!hasMultiplePhotos) return;
     setIsDragging(true);
     setStartX(e.clientX);
   };
@@ -84,7 +84,7 @@ export const AnimalCard = ({ animal, index, isAdopted = false }: AnimalCardProps
 
   // Touch events
   const handleTouchStart = (e: React.TouchEvent) => {
-    if (!hasMultiplePhotos || isAdopted) return;
+    if (!hasMultiplePhotos) return;
     setIsDragging(true);
     setStartX(e.touches[0].clientX);
   };
@@ -150,7 +150,12 @@ export const AnimalCard = ({ animal, index, isAdopted = false }: AnimalCardProps
               setCoverMap((prev) => ({ ...prev, [activePhotoIndex]: minScale / maxScale >= 0.70 }));
             }}
           />
-          {hasMultiplePhotos && !isAdopted && (
+          {isAdopted && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/20 pointer-events-none">
+              <img src={adotadoImg} alt="Adotado" className="w-3/4 object-contain" />
+            </div>
+          )}
+          {hasMultiplePhotos && (
             <>
               <button
                 type="button"
@@ -181,11 +186,6 @@ export const AnimalCard = ({ animal, index, isAdopted = false }: AnimalCardProps
                 ))}
               </div>
             </>
-          )}
-          {isAdopted && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-              <img src={adotadoImg} alt="Adotado" className="w-3/4 object-contain" />
-            </div>
           )}
           <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-foreground/70 to-transparent p-4 text-primary-foreground">
             <div className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] backdrop-blur-sm ${isAdopted ? "bg-muted-foreground/30" : "bg-primary-foreground/12"}`}>

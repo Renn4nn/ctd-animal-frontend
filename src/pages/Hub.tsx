@@ -62,6 +62,35 @@ const HubPage = () => {
   };
 
   const isLoading = isLoadingAnimals || isLoadingTypes;
+
+  if (!isLoading && animalTypes.length === 0) {
+    return (
+      <main className="min-h-screen px-4 py-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex min-h-[calc(100vh-2rem)] max-w-7xl flex-col gap-6 rounded-[2rem] border border-border/60 bg-card/70 p-4 shadow-soft backdrop-blur-sm sm:p-6 lg:p-8 items-center justify-center">
+          <motion.header
+            initial={{ opacity: 0, y: -16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35 }}
+            className="flex items-center justify-center rounded-2xl px-6 text-primary"
+          >
+            <div className="flex min-h-[300px] flex-col items-center justify-center rounded-[1.5rem] px-6 text-center">
+              <Logo size={300} />
+              <h3 className="mt-4 text-xl font-bold">
+                Nenhum tipo de animal configurado
+              </h3>
+              <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
+                Não existem categorias (tipos) de animais cadastradas ou ativas no sistema.
+              </p>
+              <Button className="w-full mt-4" onClick={() => navigate(`/controle/animal-type`)}>
+                Cadastrar tipo de animal
+              </Button>
+            </div>
+          </motion.header>
+        </div>
+      </main>
+    );
+  }
+
   if (!isLoading && animals.length === 0) {
     return (
       <main className="min-h-screen px-4 py-4 sm:px-6 lg:px-8">
@@ -78,7 +107,7 @@ const HubPage = () => {
                 Nenhum animal disponível no momento
               </h3>
               <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
-                Não existem animais cadastrados ou a API não retornou dados.
+                Não existem animais cadastrados ou disponíveis na plataforma.
               </p>
               <Button className="w-full mt-4" onClick={() => navigate(`/controle`)}>
                 Cadastrar animal

@@ -13,6 +13,41 @@ import {
 } from "@/components/ui/select"
 import { useEffect, useMemo, useState } from "react"
 import { apiRequest } from "@/lib/api/request"
+import { Trash2, RotateCcw, UploadCloud } from "lucide-react"
+
+function FilePreview({ file, onRemove }: { file: File, onRemove: () => void }) {
+  const [preview, setPreview] = useState("");
+  useEffect(() => {
+    const url = URL.createObjectURL(file);
+    setPreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [file]);
+
+  return (
+    <div className="relative h-24 w-24 rounded-md overflow-hidden border border-border group">
+      {preview && <img src={preview} alt="Preview" className="h-full w-full object-cover" />}
+      <button
+        type="button"
+        onClick={onRemove}
+        className="absolute top-1 right-1 bg-red-500/80 text-white rounded-full p-1.5 leading-none shadow hover:bg-red-600 backdrop-blur-sm transition-opacity"
+        title="Remover"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+  );
+}
+
+const getPhotoUrl = (photo: string): string => {
+  if (!photo) return "https://www.freeiconspng.com/uploads/no-image-icon-4.png";
+  if (photo.includes("photos/animals")) {
+    const uuid = photo.split("/").pop();
+    if (uuid) {
+      return `${import.meta.env.VITE_API_BASE_URL || import.meta.env.API_BASE_URL || "http://localhost:3002"}/uploads/${uuid}`;
+    }
+  }
+  return photo;
+};
 import { toast } from "@/components/ui/sonner"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 
@@ -49,6 +84,8 @@ export default function AnimalForm() {
   }))
 
   const [vaccinesText, setVaccinesText] = useState(() => (animal.vaccines ?? []).join(', '))
+  const [removedPhotos, setRemovedPhotos] = useState<string[]>([])
+  const [files, setFiles] = useState<File[]>([])
 
   useEffect(() => {
     setFormData({
@@ -65,7 +102,37 @@ export default function AnimalForm() {
       vaccines: animal.vaccines ?? [],
     })
     setVaccinesText((animal.vaccines ?? []).join(', '))
+    setRemovedPhotos([])
+    setFiles([])
   }, [animal.id])
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFiles = Array.from(e.target.files ?? []);
+    const acceptedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
+
+    const hasInvalidFile = selectedFiles.some(file => !acceptedTypes.includes(file.type));
+
+    if (hasInvalidFile) {
+      toast.error("Apenas imagens (PNG, JPEG, JPG, WEBP) são permitidas.");
+      e.target.value = "";
+      return;
+    }
+
+    setFiles(prev => {
+      const newFiles = [...prev, ...selectedFiles];
+      if (newFiles.length + (animal.photos?.length ?? 0) - removedPhotos.length > 20) {
+        toast.error("Você só pode ter até 20 imagens no total.");
+        return prev;
+      }
+      return newFiles;
+    });
+
+    e.target.value = "";
+  };
+
+  const removeFile = (index: number) => {
+    setFiles(prev => prev.filter((_, i) => i !== index));
+  };
 
   const fieldClassName = "bg-white placeholder:text-gray"
 
@@ -89,19 +156,30 @@ export default function AnimalForm() {
     setIsSubmitting(true)
 
     const vaccines = vaccinesText.split(',').map((v) => v.trim()).filter(Boolean)
+    const existingPhotos = animal.photos ? animal.photos.filter(p => !removedPhotos.includes(p)) : []
 
-    const payload: AnimalUpdate = {
-      ...formData,
-      vaccines,
-      description: formData.description?.trim() ? formData.description : null,
-      story: formData.story?.trim() ? formData.story : null,
-      behavior: formData.behavior?.trim() ? formData.behavior : null,
+    const fd = new FormData()
+    fd.append('name', formData.name ?? "")
+    fd.append('typeId', String(formData.typeId))
+    fd.append('breed', formData.breed ?? "")
+    fd.append('age', formData.age ?? "")
+    fd.append('size', formData.size ?? "Pequeno")
+    fd.append('sex', formData.sex ?? "Macho")
+    fd.append('status', formData.status ?? "Disponivel")
+    fd.append('description', formData.description ?? "")
+    fd.append('story', formData.story ?? "")
+    fd.append('behavior', formData.behavior ?? "")
+    fd.append('vaccines', JSON.stringify(vaccines))
+    fd.append('photos', JSON.stringify(existingPhotos))
+
+    for (const file of files) {
+      fd.append('files', file)
     }
 
-    const res = await apiRequest<Animal, AnimalUpdate>({
+    const res = await apiRequest<Animal, FormData>({
       method: 'patch',
       url: `/animal/${animal.id}`,
-      data: payload,
+      data: fd,
     })
 
     if ('data' in res) {
@@ -258,6 +336,101 @@ export default function AnimalForm() {
             placeholder="Ex: Dócil, sociável com crianças"
             onChange={(e) => setFormData((prev) => ({ ...prev, behavior: e.target.value }))}
           />
+        </div>
+
+        {/* Fotos Existentes */}
+        {animal.photos && animal.photos.length > 0 && (
+          <div className="space-y-3 md:col-span-2">
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium text-slate-700">Fotos Salvas</label>
+              <Button 
+                type="button" 
+                variant="outline" 
+                size="sm" 
+                className="h-8 text-xs font-semibold"
+                onClick={() => {
+                  if (removedPhotos.length === animal.photos!.length) {
+                    setRemovedPhotos([]);
+                  } else {
+                    setRemovedPhotos([...animal.photos!]);
+                  }
+                }}
+              >
+                {removedPhotos.length === animal.photos!.length ? 'Restaurar Todas' : 'Excluir Todas'}
+              </Button>
+            </div>
+            <div className="flex flex-wrap gap-4 mt-2">
+              {animal.photos.map((photo, idx) => {
+                const isRemoved = removedPhotos.includes(photo);
+                return (
+                  <div key={idx} className={`relative h-24 w-24 rounded-md overflow-hidden border border-border group transition-all duration-300 ${isRemoved ? 'opacity-50 grayscale scale-[0.98]' : ''}`}>
+                    <img
+                      src={getPhotoUrl(photo)}
+                      alt={`Foto salva ${idx}`}
+                      className="h-full w-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (isRemoved) {
+                          setRemovedPhotos(prev => prev.filter(p => p !== photo));
+                        } else {
+                          setRemovedPhotos(prev => [...prev, photo]);
+                        }
+                      }}
+                      className={`absolute top-1 right-1 text-white rounded-full p-1.5 leading-none shadow transition-colors ${isRemoved ? 'bg-blue-500 hover:bg-blue-600' : 'bg-red-500/80 hover:bg-red-600'}`}
+                      title={isRemoved ? "Restaurar" : "Remover"}
+                    >
+                      {isRemoved ? <RotateCcw size={14} /> : <Trash2 size={14} />}
+                    </button>
+                    {isRemoved && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/60 text-white text-[10px] uppercase font-bold tracking-widest pointer-events-none rounded-md">
+                        Excluída
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        <div className="space-y-4 md:col-span-2 pt-4">
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-slate-700">
+              Adicionar Novas Fotos Locais (Total de até 20 fotos)
+            </label>
+            <label 
+              htmlFor="photo-input"
+              className="relative flex flex-col items-center justify-center p-6 border-2 border-dashed border-slate-300 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer group text-center"
+            >
+              <input
+                id="photo-input"
+                type="file"
+                multiple
+                accept="image/png, image/jpeg, image/jpg, image/webp"
+                onChange={handleFileChange}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              />
+              <div className="p-3 bg-blue-100 text-blue-600 rounded-full group-hover:scale-110 transition-transform mb-3 shadow-sm">
+                <UploadCloud className="size-6" />
+              </div>
+              <p className="text-sm font-semibold text-slate-700">
+                Clique ou arraste suas imagens aqui
+              </p>
+              <p className="text-xs text-slate-500 mt-1">
+                Suporta PNG, JPEG, WEBP (Máx. 20 Arquivos)
+              </p>
+            </label>
+          </div>
+
+          {files.length > 0 && (
+            <div className="flex flex-wrap gap-3 p-3 bg-slate-50 border border-border rounded-lg">
+              {files.map((file, idx) => (
+                <FilePreview key={`${file.name}-${idx}`} file={file} onRemove={() => removeFile(idx)} />
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="pt-8 md:col-span-2 space-x-8">
