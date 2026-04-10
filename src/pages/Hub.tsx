@@ -70,7 +70,7 @@ const HubPage = () => {
     return (
       <main className="min-h-screen px-4 py-4 sm:px-6 lg:px-8">
         <div className="mx-auto flex min-h-[calc(100vh-2rem)] max-w-7xl flex-col gap-6 rounded-[2rem] border border-border/60 bg-card/70 overflow-hidden p-4 shadow-soft backdrop-blur-sm sm:p-6 lg:p-8 items-center justify-center">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.4, ease: "out" }}
@@ -95,8 +95,8 @@ const HubPage = () => {
             </div>
 
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="mt-8 relative z-10">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="rounded-full border-primary/30 bg-primary/5 hover:bg-primary hover:text-white transition-all duration-300"
                 onClick={() => navigate(`/controle/animal-type`)}
               >
@@ -113,11 +113,11 @@ const HubPage = () => {
     return (
       <main className="min-h-screen px-4 py-4 sm:px-6 lg:px-8">
         <div className="mx-auto flex min-h-[calc(100vh-2rem)] max-w-7xl flex-col gap-6 rounded-[2rem] border border-border/60 bg-card/70 p-4 shadow-soft backdrop-blur-sm sm:p-6 lg:p-8 items-center justify-center">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.4, ease: "out" }}
-            className="relative flex min-h-[350px] w-full max-w-2xl flex-col items-center justify-center overflow-hidden rounded-[2rem] bg-gradient-to-b from-card/40 to-card/80 px-6 text-center shadow-inner"
+            className="relative flex min-h-[350px] w-full max-w-2xl flex-col items-center justify-center overflow px-6 text-center"
           >
             <div className="absolute -top-12 -left-12 h-32 w-32 rounded-full bg-primary/5 blur-3xl" />
             <div className="absolute -bottom-12 -right-12 h-32 w-32 rounded-full bg-primary/10 blur-3xl" />
@@ -138,8 +138,8 @@ const HubPage = () => {
             </div>
 
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="mt-8 relative z-10">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="rounded-full border-primary/30 bg-primary/5 hover:bg-primary hover:text-white transition-all duration-300"
                 onClick={() => navigate(`/controle/animal`)}
               >
@@ -165,7 +165,7 @@ const HubPage = () => {
         </motion.header>
 
         <section className="grid gap-4">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
@@ -205,7 +205,7 @@ const HubPage = () => {
                         ))}
                       </div>
                     ) : (
-                      <motion.div 
+                      <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.4, ease: "out" }}
@@ -224,8 +224,8 @@ const HubPage = () => {
                         </div>
 
                         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="mt-8 relative z-10">
-                          <Button 
-                            variant="outline" 
+                          <Button
+                            variant="outline"
                             className="rounded-full border-primary/30 bg-primary/5 hover:bg-primary hover:text-white transition-all duration-300"
                             onClick={() => navigate(`/controle/animal`)}
                           >
